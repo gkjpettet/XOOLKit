@@ -13,7 +13,7 @@ There are already many formats for saving configuration data but none of them sa
 2. Directly translatable to Xojo code
 3. Support comments within the document
 
-JSON has curly braces all over the place and doesn't support comments. YAML supports comments but uses whitespace for indentation. This means large configuration files can become difficult to edit by hand without an IDE to help. TOML comes really close but as it's matured it has, in my opinion, become overly complex for my needs. 
+JSON has curly braces all over the place and doesn't support comments. YAML supports comments but uses whitespace for indentation. This means large configuration files can become difficult to edit by hand without an IDE to help. TOML comes really close but as it has matured it has, in my opinion, become overly complex for my needs. 
 
 ## Example
 

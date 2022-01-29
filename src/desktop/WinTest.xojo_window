@@ -23,7 +23,7 @@ Begin DesktopWindow WinTest
    Title           =   "XOOL Dev Harness"
    Type            =   0
    Visible         =   True
-   Width           =   1130
+   Width           =   1234
    Begin DesktopTextArea Input
       AllowAutoDeactivate=   True
       AllowFocusRing  =   True
@@ -111,8 +111,8 @@ Begin DesktopWindow WinTest
       AllowRowDragging=   False
       AllowRowReordering=   False
       Bold            =   False
-      ColumnCount     =   1
-      ColumnWidths    =   ""
+      ColumnCount     =   5
+      ColumnWidths    =   "60, *, 60, 60, *"
       DefaultRowHeight=   -1
       DropIndicatorVisible=   False
       Enabled         =   True
@@ -127,7 +127,7 @@ Begin DesktopWindow WinTest
       HeadingIndex    =   -1
       Height          =   638
       Index           =   -2147483648
-      InitialValue    =   ""
+      InitialValue    =   "Line	Type	Start	Len	Lexeme"
       Italic          =   False
       Left            =   659
       LockBottom      =   True
@@ -146,7 +146,7 @@ Begin DesktopWindow WinTest
       Transparent     =   False
       Underline       =   False
       Visible         =   True
-      Width           =   451
+      Width           =   555
       _ScrollOffset   =   0
       _ScrollWidth    =   -1
    End
@@ -154,6 +154,35 @@ End
 #tag EndDesktopWindow
 
 #tag WindowCode
+	#tag Method, Flags = &h21, Description = 557064617465732074686520746F6B656E73206C697374626F7820776974682060746F6B656E73602E
+		Private Sub UpdateTokensListbox(tokens() As XOOLKit.XKToken)
+		  /// Updates the tokens listbox with `tokens`.
+		  
+		  TokensListbox.RemoveAllRows
+		  
+		  Var lexeme As String
+		  For Each t As XOOLKit.XKToken In tokens
+		    
+		    TokensListbox.AddRow( _
+		    t.LineNumber.ToString, _
+		    t.Type.ToString, _
+		    t.AbsoluteStart.ToString, _
+		    t.Length.ToString)
+		    
+		    Select Case t.Type
+		    Case XKTokenTypes.ColorLiteral
+		      lexeme = XOOLKit.XKColorToken(t).MyColor.ToString
+		    Else
+		      lexeme = t.Lexeme
+		    End Select
+		    
+		    TokensListbox.CellTextAt(TokensListbox.LastAddedRowIndex, 4) = lexeme
+		  Next t
+		  
+		End Sub
+	#tag EndMethod
+
+
 #tag EndWindowCode
 
 #tag Events Input
@@ -177,6 +206,25 @@ End
 		    
 		    setAutomaticQuoteSubstitutionEnabled (myHandle, False)
 		  #EndIf
+		End Sub
+	#tag EndEvent
+#tag EndEvents
+#tag Events ButtonTokenise
+	#tag Event
+		Sub Pressed()
+		  Var tokeniser As New XOOLKit.XKTokeniser
+		  
+		  Var tokens() As XOOLKit.XKToken
+		  
+		  Try
+		    tokens = tokeniser.Tokenise(Input.Text)
+		    UpdateTokensListbox(tokens)
+		    
+		  Catch e As XOOLKit.XKException
+		    MessageBox("" + e.LineNumber.ToString + ", " + e.AbsolutePosition.ToString + ": " + e.Message)
+		    
+		  End Try
+		  
 		End Sub
 	#tag EndEvent
 #tag EndEvents
