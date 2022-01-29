@@ -169,13 +169,19 @@ End
 		    t.AbsoluteStart.ToString, _
 		    t.Length.ToString)
 		    
+		    // Compute the lexeme column value.
 		    Select Case t.Type
+		    Case XKTokenTypes.Number
+		      lexeme = XOOLKit.XKNumberToken(t).Value.StringValue
+		      
 		    Case XKTokenTypes.ColorLiteral
 		      lexeme = XOOLKit.XKColorToken(t).MyColor.ToString
+		      
 		    Else
 		      lexeme = t.Lexeme
 		    End Select
 		    
+		    // Populate the lexeme column.
 		    TokensListbox.CellTextAt(TokensListbox.LastAddedRowIndex, 4) = lexeme
 		  Next t
 		  

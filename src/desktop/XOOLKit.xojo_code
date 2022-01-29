@@ -14,7 +14,11 @@ Protected Module XOOLKit
 		  Case XKTokenTypes.Comment
 		    Return "Comment"
 		    
+		  Case XKTokenTypes.DateTime
+		    Return "DateTime"
+		    
 		  Case XKTokenTypes.Dot
+		    Return "Dot"
 		    
 		  Case XKTokenTypes.EOF
 		    Return "EOF"
@@ -30,6 +34,9 @@ Protected Module XOOLKit
 		    
 		  Case XKTokenTypes.LSquare
 		    Return "LSquare"
+		    
+		  Case XKTokenTypes.Number
+		    Return "Number"
 		    
 		  Case XKTokenTypes.RCurly
 		    Return "RCurly"
@@ -51,12 +58,14 @@ Protected Module XOOLKit
 	#tag Enum, Name = XKTokenTypes, Type = Integer, Flags = &h0
 		Comma
 		  Comment
+		  DateTime
 		  Dot
 		  EOF
 		  EOL
 		  Equal
 		  LCurly
 		  LSquare
+		  Number
 		  RCurly
 		  RSquare
 		  Undefined

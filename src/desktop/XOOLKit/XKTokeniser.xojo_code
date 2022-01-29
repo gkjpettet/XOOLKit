@@ -19,9 +19,9 @@ Protected Class XKTokeniser
 		End Function
 	#tag EndMethod
 
-	#tag Method, Flags = &h21, Description = 417474656D70747320746F20616464206120636F6C6F7220746F6B656E2E2052616973657320616E20584B457863657074696F6E20696620756E7375636365737366756C2E
+	#tag Method, Flags = &h21, Description = 417474656D70747320746F20616464206120636F6C6F7220746F6B656E2E2052616973657320616E2060584B457863657074696F6E6020696620756E7375636365737366756C2E
 		Private Function ColorToken() As XOOLKit.XKToken
-		  /// Attempts to add a color token. Raises an XKException if unsuccessful.
+		  /// Attempts to add a color token. Raises an `XKException` if unsuccessful.
 		  ///
 		  /// Assumes we have just consumed a `&`:
 		  /// ```
@@ -129,13 +129,35 @@ Protected Class XKTokeniser
 		End Function
 	#tag EndMethod
 
+	#tag Method, Flags = &h21, Description = 417474656D70747320746F206164642061204461746554696D6520746F6B656E2E2052616973657320616E2060584B457863657074696F6E6020696620756E7375636365737366756C2E
+		Private Function DateTimeToken() As XKDateTimeToken
+		  /// Attempts to add a DateTime token. Raises an `XKException` if unsuccessful.
+		  ///
+		  /// Assumes we have just consumed a digit.
+		  ///
+		  /// ```
+		  /// 2021-12-25 09:15:00
+		  //   ^
+		  ///
+		  /// 2021-12-25
+		  ///  ^
+		  ///
+		  /// 07:32:00
+		  ///  ^
+		  /// ```
+		  
+		  #Pragma Warning "TODO"
+		  
+		End Function
+	#tag EndMethod
+
 	#tag Method, Flags = &h21, Description = 52657475726E732061206E657720584B546F6B656E206F6620607479706560207374617274696E6720617420606D546F6B656E53746172746020616E6420656E64696E6720617420606D43757272656E74202D2031602E
 		Private Function MakeToken(type As XOOLKit.XKTokenTypes) As XOOLKit.XKToken
 		  /// Returns a new XKToken of `type` starting at `mTokenStart` and ending at `mCurrent - 1`.
 		  
 		  Select Case type
-		  Case XKTokenTypes.EOF, XKTokenTypes.EOL, XKTokenTypes.Dot, XKTokenTypes.Equal, XKTokenTypes.LSquare, _
-		    XKTokenTypes.RSquare
+		  Case XKTokenTypes.Comment, XKTokenTypes.Dot, XKTokenTypes.EOF, XKTokenTypes.EOL, XKTokenTypes.Equal, _
+		    XKTokenTypes.LCurly, XKTokenTypes.LSquare, XKTokenTypes.RCurly, XKTokenTypes.RSquare
 		    // These tokens do not store their lexeme.
 		    Return New XKToken(type, mTokenStart, mLineNumber, mCurrent - mTokenStart)
 		    
@@ -167,9 +189,9 @@ Protected Class XKTokeniser
 		End Function
 	#tag EndMethod
 
-	#tag Method, Flags = &h21, Description = 52657475726E7320746865206E65787420746F6B656E2E204D617920726169736520616E20584B457863657074696F6E2E
+	#tag Method, Flags = &h21, Description = 52657475726E7320746865206E65787420746F6B656E2E204D617920726169736520616E2060584B457863657074696F6E602E
 		Private Function NextToken() As XOOLKit.XKToken
-		  /// Returns the next token. May raise an XKException.
+		  /// Returns the next token. May raise an `XKException`.
 		  
 		  SkipWhitespace
 		  
@@ -181,16 +203,16 @@ Protected Class XKTokeniser
 		  
 		  If char = &u0A Then Return MakeToken(XKTokenTypes.EOL)
 		  
-		  // Comment?
+		  // ========================
+		  // COMMENT
+		  // ========================
 		  If char = "#" Then Return CommentToken
 		  
-		  // Assignment?
+		  // ========================
+		  // SINGLE CHARACTER SYMBOLS
+		  // ========================
 		  If char = "=" Then Return MakeToken(XKTokenTypes.Equal)
-		  
-		  // Dot?
 		  If char = "." Then Return MakeToken(XKTokenTypes.Dot)
-		  
-		  // Comma?
 		  If char = "," Then Return MakeToken(XKTokenTypes.Comma)
 		  
 		  // Square bracket?
@@ -207,18 +229,123 @@ Protected Class XKTokeniser
 		    Return MakeToken(XKTokenTypes.RCurly)
 		  End If
 		  
-		  // Color literal?
+		  // ========================
+		  // COLOR LITERALS
+		  // ========================
 		  If char = "&" Then Return ColorToken
 		  
-		  // Date?
+		  // ========================
+		  // NUMBERS & DATES
+		  // ========================
+		  If char = "-" Then
+		    Var t As XKToken = NumberToken(True)
+		    If t = Nil Then
+		      SyntaxError("Expected a number after `-`.", mLineNumber, mCurrent)
+		    Else
+		      Return t
+		    End If
+		  Else
+		    If char.IsDigit Then
+		      Var t As XKToken = NumberToken(False)
+		      If t = Nil Then
+		        Return DateTimeToken
+		      Else
+		        Return t
+		      End If
+		    End If
+		  End If
 		  
-		  
-		  // Number?
-		  
-		  
-		  // String?
+		  // ========================
+		  // STRINGS
+		  // ========================
+		  #Pragma Warning "TODO"
 		  
 		  SyntaxError("Unexpected character `" + char + "`.", mLineNumber, mCurrent)
+		  
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h21, Description = 417474656D70747320746F206164642061206E756D62657220746F6B656E2E2052657475726E73204E696C20696620756E7375636365737366756C2E
+		Private Function NumberToken(consumedMinus As Boolean) As XKNumberToken
+		  /// Attempts to add a number token. Returns Nil if unsuccessful.
+		  ///
+		  /// Assumes we have just consumed a digit or a minus sign.
+		  ///
+		  /// ```
+		  /// 42
+		  ///  ^
+		  ///
+		  /// -100
+		  ///  ^
+		  /// ```
+		  
+		  // Need to see a digit after a minus sign.
+		  If consumedMinus And Not Peek.IsDigit Then Return Nil
+		  
+		  // Cache the current status as we will have to revert if we don't find a valid number token.
+		  Var oldCurrent As Integer = mCurrent
+		  
+		  Var isInteger As Boolean = True
+		  
+		  // Consume contiguous digits.
+		  While Peek.IsDigit
+		    Advance
+		  Wend
+		  
+		  // Double?
+		  If Peek = "." Then
+		    isInteger = False
+		    Advance
+		    // Must see a mantissa.
+		    If Not Peek.IsDigit Then
+		      // Revert.
+		      mCurrent = oldCurrent
+		      Return Nil
+		    Else
+		      // Consume the mantissa.
+		      While Peek.IsDigit
+		        Advance
+		      Wend
+		    End If
+		  End If
+		  
+		  // Exponent?
+		  If Peek = "e" Then
+		    isInteger = False
+		    Advance
+		    // Consume the optional sign character.
+		    If Peek(2).IsExactly("-", "+") Then Advance
+		    
+		    // Must see at least one digit.
+		    If Not Peek.IsDigit Then
+		      // Revert.
+		      mCurrent = oldCurrent
+		      Return Nil
+		    Else
+		      // Consume the exponent.
+		      While Peek.IsDigit
+		        Advance
+		      Wend
+		    End If
+		  End If
+		  
+		  // Need to see whitespace or EOF
+		  If Peek.IsSpaceOrTabOrNewline Or Peek = "" Then
+		    Var s() As String
+		    For i As Integer = mTokenStart To mCurrent - 1
+		      s.Add(mCharacters(i))
+		    Next i
+		    Var lexeme As String = String.FromArray(s, "")
+		    If isInteger Then
+		      Return New XKNumberToken(mTokenStart, mLineNumber, lexeme.Length, Integer.FromString(lexeme), True)
+		    Else
+		      Return New XKNumberToken(mTokenStart, mLineNumber, lexeme.Length, Double.FromString(lexeme), False)
+		    End If
+		  Else
+		    // Revert.
+		    mCurrent = oldCurrent
+		    Return Nil
+		  End If
 		  
 		End Function
 	#tag EndMethod
@@ -279,9 +406,9 @@ Protected Class XKTokeniser
 		End Sub
 	#tag EndMethod
 
-	#tag Method, Flags = &h21, Description = 52616973657320616E20584B457863657074696F6E207769746820606D657373616765602061742060616273506F7360206F6E206C696E6520606C696E654E756D626572602E
+	#tag Method, Flags = &h21, Description = 52616973657320616E2060584B457863657074696F6E60207769746820606D657373616765602061742060616273506F7360206F6E206C696E6520606C696E654E756D626572602E
 		Private Sub SyntaxError(message As String, lineNumber As Integer, absPos As Integer)
-		  /// Raises an XKException with `message` at `absPos` on line `lineNumber`.
+		  /// Raises an `XKException` with `message` at `absPos` on line `lineNumber`.
 		  
 		  #Pragma BreakOnExceptions False
 		  
@@ -289,9 +416,9 @@ Protected Class XKTokeniser
 		End Sub
 	#tag EndMethod
 
-	#tag Method, Flags = &h0, Description = 546F6B656E69736573206120584F4F4C20646F63756D656E7420696E746F20616E206172726179206F6620584B546F6B656E732E20526169736573206120584B457863657074696F6E2069662060736020697320696E76616C69642E
+	#tag Method, Flags = &h0, Description = 546F6B656E69736573206120584F4F4C20646F63756D656E7420696E746F20616E206172726179206F6620584B546F6B656E732E2052616973657320616E2060584B457863657074696F6E602069662060736020697320696E76616C69642E
 		Function Tokenise(s As String) As XKToken()
-		  /// Tokenises a XOOL document into an array of XKTokens. Raises a XKException if `s` is invalid.
+		  /// Tokenises a XOOL document into an array of XKTokens. Raises an `XKException` if `s` is invalid.
 		  
 		  Reset(s)
 		  
