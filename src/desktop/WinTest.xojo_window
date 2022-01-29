@@ -20,7 +20,7 @@ Begin DesktopWindow WinTest
    MinimumHeight   =   64
    MinimumWidth    =   64
    Resizeable      =   True
-   Title           =   "TOML Dev Harness"
+   Title           =   "XOOL Dev Harness"
    Type            =   0
    Visible         =   True
    Width           =   1130
@@ -147,6 +147,7 @@ Begin DesktopWindow WinTest
       Underline       =   False
       Visible         =   True
       Width           =   451
+      _ScrollOffset   =   0
       _ScrollWidth    =   -1
    End
 End
