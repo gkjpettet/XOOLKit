@@ -29,6 +29,9 @@ Protected Module XOOLKit
 		  Case XKTokenTypes.Equal
 		    Return "Equal"
 		    
+		  Case XKTokenTypes.Identifier
+		    Return "Identifier"
+		    
 		  Case XKTokenTypes.LCurly
 		    Return "LCurly"
 		    
@@ -44,6 +47,9 @@ Protected Module XOOLKit
 		  Case XKTokenTypes.RSquare
 		    Return "RSquare"
 		    
+		  Case XKTokenTypes.StringLiteral
+		    Return "String Literal"
+		    
 		  Case XKTokenTypes.Undefined
 		    Return "Undefined"
 		    
@@ -56,20 +62,22 @@ Protected Module XOOLKit
 
 
 	#tag Enum, Name = XKTokenTypes, Type = Integer, Flags = &h0
-		Comma
+		ColorLiteral
+		  Comma
 		  Comment
 		  DateTime
 		  Dot
 		  EOF
 		  EOL
 		  Equal
+		  Identifier
 		  LCurly
 		  LSquare
 		  Number
 		  RCurly
 		  RSquare
-		  Undefined
-		ColorLiteral
+		  StringLiteral
+		Undefined
 	#tag EndEnum
 
 

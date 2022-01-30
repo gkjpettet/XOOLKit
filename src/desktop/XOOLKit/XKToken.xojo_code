@@ -1,11 +1,10 @@
 #tag Class
 Protected Class XKToken
 	#tag Method, Flags = &h0
-		Sub Constructor(type As XKTokenTypes, tokenStart As Integer, lineNumber As Integer, length As Integer, lexeme As String = "")
+		Sub Constructor(type As XKTokenTypes, tokenStart As Integer, lineNumber As Integer, lexeme As String = "")
 		  Self.Type = type
 		  Self.AbsoluteStart = tokenStart
 		  Self.LineNumber = lineNumber
-		  Self.Length = length
 		  Self.Lexeme = lexeme
 		  
 		End Sub
@@ -14,10 +13,6 @@ Protected Class XKToken
 
 	#tag Property, Flags = &h0, Description = 302D626173656420696E64657820696E2074686520736F7572636520636F6465206F662074686520666972737420636861726163746572206F66207468697320746F6B656E2E
 		AbsoluteStart As Integer = 0
-	#tag EndProperty
-
-	#tag Property, Flags = &h0, Description = 546865206C656E6774682028696E206368617261637465727329206F66207468697320746F6B656E2E
-		Length As Integer = 0
 	#tag EndProperty
 
 	#tag Property, Flags = &h0, Description = 5468697320746F6B656E277320286F7074696F6E616C29206C6578656D652E
@@ -78,7 +73,48 @@ Protected Class XKToken
 			Name="Type"
 			Visible=false
 			Group="Behavior"
+			InitialValue="XOOLKit.XKTokenTypes.Undefined"
+			Type="XOOLKit.XKTokenTypes"
+			EditorType="Enum"
+			#tag EnumValues
+				"0 - ColorLiteral"
+				"1 - Comma"
+				"2 - Comment"
+				"3 - DateTime"
+				"4 - Dot"
+				"5 - EOF"
+				"6 - EOL"
+				"7 - Equal"
+				"8 - LCurly"
+				"9 - LSquare"
+				"10 - Number"
+				"11 - RCurly"
+				"12 - RSquare"
+				"13 - StringLiteral"
+				"14 - Undefined"
+			#tag EndEnumValues
+		#tag EndViewProperty
+		#tag ViewProperty
+			Name="AbsoluteStart"
+			Visible=false
+			Group="Behavior"
+			InitialValue="0"
+			Type="Integer"
+			EditorType=""
+		#tag EndViewProperty
+		#tag ViewProperty
+			Name="Lexeme"
+			Visible=false
+			Group="Behavior"
 			InitialValue=""
+			Type="String"
+			EditorType="MultiLineEditor"
+		#tag EndViewProperty
+		#tag ViewProperty
+			Name="LineNumber"
+			Visible=false
+			Group="Behavior"
+			InitialValue="1"
 			Type="Integer"
 			EditorType=""
 		#tag EndViewProperty

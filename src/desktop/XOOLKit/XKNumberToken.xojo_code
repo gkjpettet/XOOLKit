@@ -2,8 +2,8 @@
 Protected Class XKNumberToken
 Inherits XOOLKit.XKToken
 	#tag Method, Flags = &h0
-		Sub Constructor(tokenStart As Integer, lineNumber As Integer, length As Integer, value As Variant, isInteger As Boolean)
-		  Super.Constructor(XKTokenTypes.Number, tokenStart, lineNumber, length)
+		Sub Constructor(tokenStart As Integer, lineNumber As Integer, value As Variant, isInteger As Boolean)
+		  Super.Constructor(XKTokenTypes.Number, tokenStart, lineNumber)
 		  Self.Value = value
 		  Self.IsInteger = isInteger
 		  

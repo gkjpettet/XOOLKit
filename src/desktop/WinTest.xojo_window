@@ -111,8 +111,8 @@ Begin DesktopWindow WinTest
       AllowRowDragging=   False
       AllowRowReordering=   False
       Bold            =   False
-      ColumnCount     =   5
-      ColumnWidths    =   "60, *, 60, 60, *"
+      ColumnCount     =   4
+      ColumnWidths    =   "60, *, 60, *"
       DefaultRowHeight=   -1
       DropIndicatorVisible=   False
       Enabled         =   True
@@ -127,7 +127,7 @@ Begin DesktopWindow WinTest
       HeadingIndex    =   -1
       Height          =   638
       Index           =   -2147483648
-      InitialValue    =   "Line	Type	Start	Len	Lexeme"
+      InitialValue    =   "Line	Type	Start	Lexeme"
       Italic          =   False
       Left            =   659
       LockBottom      =   True
@@ -166,8 +166,7 @@ End
 		    TokensListbox.AddRow( _
 		    t.LineNumber.ToString, _
 		    t.Type.ToString, _
-		    t.AbsoluteStart.ToString, _
-		    t.Length.ToString)
+		    t.AbsoluteStart.ToString)
 		    
 		    // Compute the lexeme column value.
 		    Select Case t.Type
@@ -185,7 +184,7 @@ End
 		    End Select
 		    
 		    // Populate the lexeme column.
-		    TokensListbox.CellTextAt(TokensListbox.LastAddedRowIndex, 4) = lexeme
+		    TokensListbox.CellTextAt(TokensListbox.LastAddedRowIndex, 3) = lexeme
 		  Next t
 		  
 		End Sub

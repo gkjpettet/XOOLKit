@@ -37,28 +37,28 @@ Protected Class XKTokeniser
 		  /// ```
 		  // Where `R`, `G`, `B` and `A` are hexadecimal digits.
 		  
-		  If Not Match("c") Then SyntaxError("Expected `c` at start of Color literal.", mLineNumber, mCurrent)
+		  If Not Match("c") Then SyntaxError("Expected `c` at start of Color literal.")
 		  
 		  // Need to see at least 3 hex digits.
 		  If Not Consume.IsHexDigit Or Not Consume.IsHexDigit Or Not Consume.IsHexDigit Then
-		    SyntaxError("Expected a hexadecimal digit.", mLineNumber, mCurrent)
+		    SyntaxError("Expected a hexadecimal digit.")
 		  End If
 		  
 		  // 3 digit Color literal?
 		  Var s As String = Peek
 		  If s.IsSpaceOrTabOrNewline Or s = "" Then
-		    Return New XKColorToken(mTokenStart, mLineNumber, 3, ComputeLexeme(mTokenStart + 2, mCurrent - 1))
+		    Return New XKColorToken(mTokenStart, mLineNumber, ComputeLexeme(mTokenStart + 2, mCurrent - 1))
 		  End If
 		  
 		  // Need to see at least 3 more hex digits.
 		  If Not Consume.IsHexDigit Or Not Consume.IsHexDigit Or Not Consume.IsHexDigit Then
-		    SyntaxError("Expected a hexadecimal digit.", mLineNumber, mCurrent)
+		    SyntaxError("Expected a hexadecimal digit.")
 		  End If
 		  
 		  // 6 digit Color literal?
 		  s = Peek
 		  If s.IsSpaceOrTabOrNewline Or s = "" Then
-		    Return New XKColorToken(mTokenStart, mLineNumber, 6, ComputeLexeme(mTokenStart + 2, mCurrent - 1))
+		    Return New XKColorToken(mTokenStart, mLineNumber, ComputeLexeme(mTokenStart + 2, mCurrent - 1))
 		  End If
 		  
 		  // 8 digit Color literal?
@@ -66,10 +66,10 @@ Protected Class XKTokeniser
 		    Advance(2)
 		    s = Peek
 		    If s.IsSpaceOrTabOrNewline Or s = "" Then
-		      Return New XKColorToken(mTokenStart, mLineNumber, 8, ComputeLexeme(mTokenStart + 2, mCurrent - 1))
+		      Return New XKColorToken(mTokenStart, mLineNumber, ComputeLexeme(mTokenStart + 2, mCurrent - 1))
 		    Else
 		      // Invalid character after these 8 hex digits.
-		      SyntaxError("Expected whitespace or EOF after Color literal,", mLineNumber, mCurrent)
+		      SyntaxError("Expected whitespace or EOF after Color literal,")
 		    End If
 		  End If
 		  
@@ -153,7 +153,7 @@ Protected Class XKTokeniser
 		  
 		  // Need to see at least one digit.
 		  If Not Peek.IsDigit Then
-		    SyntaxError("Invalid DateTime. Expected a digit.", mLineNumber, mCurrent)
+		    SyntaxError("Invalid DateTime. Expected a digit.")
 		  Else
 		    Advance
 		  End If
@@ -168,27 +168,27 @@ Protected Class XKTokeniser
 		  
 		  // Consume the year (two more digits).
 		  If Not Consume.IsDigit Or Not Consume.IsDigit Then
-		    SyntaxError("Invalid DateTime. Expected a four digit year.", mLineNumber, mCurrent)
+		    SyntaxError("Invalid DateTime. Expected a four digit year.")
 		  End If
 		  
 		  // Must see a hyphen.
 		  If Consume <> "-" Then
-		    SyntaxError("Invalid DateTime. Expected a `-` after the year.", mLineNumber, mCurrent)
+		    SyntaxError("Invalid DateTime. Expected a `-` after the year.")
 		  End If
 		  
 		  // Consume the two digit month.
 		  If Not Consume.IsDigit Or Not Consume.IsDigit Then
-		    SyntaxError("Invalid DateTime. Expected a two digit month.", mLineNumber, mCurrent)
+		    SyntaxError("Invalid DateTime. Expected a two digit month.")
 		  End If
 		  
 		  // Must see a hyphen.
 		  If Consume <> "-" Then
-		    SyntaxError("Invalid DateTime. Expected a `-` after the month.", mLineNumber, mCurrent)
+		    SyntaxError("Invalid DateTime. Expected a `-` after the month.")
 		  End If
 		  
 		  // Consume the two digit day.
 		  If Not Consume.IsDigit Or Not Consume.IsDigit Then
-		    SyntaxError("Invalid DateTime. Expected a two digit day.", mLineNumber, mCurrent)
+		    SyntaxError("Invalid DateTime. Expected a two digit day.")
 		  End If
 		  
 		  // Full DateTime? Must see a space followed by a digit (e.g: `2021-12-25 09:15:00`).
@@ -204,11 +204,11 @@ Protected Class XKTokeniser
 		    Try
 		      d = DateTime.FromString(lexeme)
 		    Catch e As RuntimeException
-		      SyntaxError("Invalid DateTime. " + e.Message, mLineNumber, mCurrent)
+		      SyntaxError("Invalid DateTime. " + e.Message)
 		    End Try
-		    Return New XOOLKit.XKDateTimeToken(mTokenStart, mLineNumber, lexeme.Length, d)
+		    Return New XOOLKit.XKDateTimeToken(mTokenStart, mLineNumber, d)
 		  Else
-		    SyntaxError("Invalid DateTime. Expected whitespace or EOF.", mLineNumber, mCurrent)
+		    SyntaxError("Invalid DateTime. Expected whitespace or EOF.")
 		  End If
 		End Function
 	#tag EndMethod
@@ -226,27 +226,27 @@ Protected Class XKTokeniser
 		  
 		  // Consume the two digit hour value.
 		  If Not Consume.IsDigit Or Not Consume.IsDigit Then
-		    SyntaxError("Invalid DateTime. Expected a two digit hour value.", mLineNumber, mCurrent)
+		    SyntaxError("Invalid DateTime. Expected a two digit hour value.")
 		  End if
 		  
 		  // Must see a colon.
 		  If Consume <> ":" Then
-		    SyntaxError("Invalid DateTime. Expected colon after the hour value.", mLineNumber, mCurrent)
+		    SyntaxError("Invalid DateTime. Expected colon after the hour value.")
 		  End If
 		  
 		  // Consume the two digit minute value.
 		  If Not Consume.IsDigit Or Not Consume.IsDigit Then
-		    SyntaxError("Invalid DateTime. Expected a two digit minute value.", mLineNumber, mCurrent)
+		    SyntaxError("Invalid DateTime. Expected a two digit minute value.")
 		  End if
 		  
 		  // Must see a colon.
 		  If Consume <> ":" Then
-		    SyntaxError("Invalid DateTime. Expected colon after the minute value.", mLineNumber, mCurrent)
+		    SyntaxError("Invalid DateTime. Expected colon after the minute value.")
 		  End If
 		  
 		  // Consume the two digit seconds value.
 		  If Not Consume.IsDigit Or Not Consume.IsDigit Then
-		    SyntaxError("Invalid DateTime. Expected a two digit seconds value.", mLineNumber, mCurrent)
+		    SyntaxError("Invalid DateTime. Expected a two digit seconds value.")
 		  End if
 		  
 		  // Must see whitespace or EOF.
@@ -262,12 +262,35 @@ Protected Class XKTokeniser
 		    Try
 		      d = New DateTime(year, month, day, hour, minute, second)
 		    Catch e As RuntimeException
-		      SyntaxError("Invalid DateTime. " + e.Message, mLineNumber, mCurrent)
+		      SyntaxError("Invalid DateTime. " + e.Message)
 		    End Try
-		    Return New XOOLKit.XKDateTimeToken(mTokenStart, mLineNumber, s.Length, d)
+		    Return New XOOLKit.XKDateTimeToken(mTokenStart, mLineNumber, d)
 		  Else
-		    SyntaxError("Invalid DateTime. Expected whitespace or EOF.", mLineNumber, mCurrent)
+		    SyntaxError("Invalid DateTime. Expected whitespace or EOF.")
 		  End If
+		  
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h21, Description = 417474656D70747320746F2061646420616E206964656E746966657220746F6B656E2E2052616973657320616E2060584B457863657074696F6E6020696620756E7375636365737366756C2E
+		Private Function IdentifierToken() As XKToken
+		  /// Attempts to add an identifer token. Raises an `XKException` if unsuccessful.
+		  ///
+		  /// Assumes we have just consumed an ASCII letter or underscore.
+		  ///
+		  /// ```
+		  /// abc
+		  ///  ^
+		  /// ```
+		  ///
+		  /// Valid identifiers (keys and dictionary names) match Xojo's rules. They must start with an ASCII
+		  /// letter but may contain any number of ASCII letters, digits or the underscore.
+		  
+		  While Peek.IsASCIILetterOrDigitOrUnderscore
+		    Advance
+		  Wend
+		  
+		  Return MakeToken(XKTokenTypes.Identifier)
 		  
 		End Function
 	#tag EndMethod
@@ -280,12 +303,11 @@ Protected Class XKTokeniser
 		  Case XKTokenTypes.Comment, XKTokenTypes.Dot, XKTokenTypes.EOF, XKTokenTypes.EOL, XKTokenTypes.Equal, _
 		    XKTokenTypes.LCurly, XKTokenTypes.LSquare, XKTokenTypes.RCurly, XKTokenTypes.RSquare
 		    // These tokens do not store their lexeme.
-		    Return New XKToken(type, mTokenStart, mLineNumber, mCurrent - mTokenStart)
+		    Return New XKToken(type, mTokenStart, mLineNumber)
 		    
 		  Else
 		    // All other tokens store their lexeme.
-		    Return New XKToken(type, mTokenStart, mLineNumber, mCurrent - mTokenStart, _
-		    ComputeLexeme(mTokenStart, mCurrent - 1))
+		    Return New XKToken(type, mTokenStart, mLineNumber, ComputeLexeme(mTokenStart, mCurrent - 1))
 		    
 		  End Select
 		  
@@ -358,7 +380,7 @@ Protected Class XKTokeniser
 		  If char = "-" Then
 		    Var t As XKToken = NumberToken(True)
 		    If t = Nil Then
-		      SyntaxError("Expected a number after `-`.", mLineNumber, mCurrent)
+		      SyntaxError("Expected a number after `-`.")
 		    Else
 		      Return t
 		    End If
@@ -376,9 +398,14 @@ Protected Class XKTokeniser
 		  // ========================
 		  // STRINGS
 		  // ========================
-		  #Pragma Warning "TODO"
+		  If char = """" Then Return StringToken
 		  
-		  SyntaxError("Unexpected character `" + char + "`.", mLineNumber, mCurrent)
+		  // ========================
+		  // IDENTIFIERS
+		  // ========================
+		  If char.IsASCIILetter Then Return IdentifierToken
+		  
+		  SyntaxError("Unexpected character `" + char + "`.")
 		  
 		End Function
 	#tag EndMethod
@@ -447,19 +474,20 @@ Protected Class XKTokeniser
 		    End If
 		  End If
 		  
-		  // Need to see whitespace or EOF
-		  If Peek.IsSpaceOrTabOrNewline Or Peek = "" Then
+		  // Need to see whitespace, `]`, a comma or EOF
+		  Select Case Peek
+		  Case " ", &u09, &u0A, "]", ",", ""
 		    Var lexeme As String = ComputeLexeme(mTokenStart, mCurrent - 1)
 		    If isInteger Then
-		      Return New XKNumberToken(mTokenStart, mLineNumber, lexeme.Length, Integer.FromString(lexeme), True)
+		      Return New XKNumberToken(mTokenStart, mLineNumber, Integer.FromString(lexeme), True)
 		    Else
-		      Return New XKNumberToken(mTokenStart, mLineNumber, lexeme.Length, Double.FromString(lexeme), False)
+		      Return New XKNumberToken(mTokenStart, mLineNumber, Double.FromString(lexeme), False)
 		    End If
 		  Else
 		    // Revert.
 		    mCurrent = oldCurrent
 		    Return Nil
-		  End If
+		  End Select
 		  
 		End Function
 	#tag EndMethod
@@ -481,6 +509,76 @@ Protected Class XKTokeniser
 		End Function
 	#tag EndMethod
 
+	#tag Method, Flags = &h21, Description = 417474656D70747320746F2061646420612072617720737472696E6720746F6B656E2E2052616973657320616E2060584B457863657074696F6E6020696620756E7375636365737366756C2E
+		Private Function RawStringToken() As XOOLKit.XKToken
+		  /// Attempts to add a raw string token. Raises an `XKException` if unsuccessful.
+		  ///
+		  /// Assumes we have just consumed the opening triple quotes `"""`:
+		  /// ```
+		  /// s = """Hello world"""
+		  ///        ^
+		  /// ```
+		  ///
+		  /// Strings mimic Wren's strings (https://wren.io/values.html)
+		  /// A raw string is flanked by triple quotes (`"""`).
+		  /// Raw strings do not process escapes.
+		  /// When a raw string spans multiple lines and a triple quote is on it’s own line, 
+		  /// any whitespace on that line will be ignored. This means the opening and closing lines are not 
+		  /// counted as part of the string when the triple quotes are separate lines, as long as they only 
+		  /// contain whitespace (spaces + tabs):
+		  ///
+		  /// ```
+		  /// """
+		  ///    Hello world
+		  /// """
+		  /// ```
+		  ///
+		  /// Equates to "   Hello world" (note the leading whitespace is preserved).
+		  
+		  // Edge case: Immediate end of the file.
+		  If Peek = "" Then
+		    SyntaxError("Unterminated raw string literal.")
+		  End If
+		  
+		  Var lexemeStart As Integer = mCurrent
+		  Var startLine As Integer = mLineNumber
+		  
+		  // Is there only whitespace to the end of the line after the opening delimiter?
+		  Do Until AtEnd
+		    Var char As String = Peek
+		    If char.IsSpaceOrTab Then
+		      Advance
+		      
+		    ElseIf char = &u0A Then
+		      Advance
+		      lexemeStart = mCurrent
+		      
+		    ElseIf char = "" Then
+		      SyntaxError("Unterminated raw string literal.")
+		      
+		    Else
+		      Exit
+		    End If
+		  Loop
+		  
+		  // Find the closing delimiter.
+		  While Not AtEnd
+		    If Peek = """" And Peek(2) = """" And Peek(3) = """" Then
+		      // Found the closing delimiter.
+		      Advance(3)
+		      Var lexeme As String = ComputeLexeme(lexemeStart, mCurrent - 4)
+		      Return New XOOLKit.XKToken(XKTokenTypes.StringLiteral, mTokenStart, startLine, lexeme)
+		    Else
+		      Advance
+		    End If
+		  Wend
+		  
+		  // Unterminated raw string.
+		  SyntaxError("Unterminated raw string literal.")
+		  
+		End Function
+	#tag EndMethod
+
 	#tag Method, Flags = &h21, Description = 5265736574732074686520746F6B656E6973657220746F20757365206073602061732074686520736F7572636520737472696E672E
 		Private Sub Reset(s As String)
 		  /// Resets the tokeniser to use `s` as the source string.
@@ -495,7 +593,7 @@ Protected Class XKTokeniser
 		  mCurrent = 0
 		  mTokenStart = 0
 		  mLineNumber = 1
-		  mPreviousToken = New XKToken(XKTokenTypes.Undefined, 0, 1, 0)
+		  mPreviousToken = New XKToken(XKTokenTypes.Undefined, 0, 1)
 		End Sub
 	#tag EndMethod
 
@@ -520,13 +618,168 @@ Protected Class XKTokeniser
 		End Sub
 	#tag EndMethod
 
+	#tag Method, Flags = &h21, Description = 417474656D70747320746F206164642061207374616E6461726420737472696E6720746F6B656E2E2052616973657320616E2060584B457863657074696F6E6020696620756E7375636365737366756C2E
+		Private Function StandardStringToken() As XOOLKit.XKToken
+		  /// Attempts to add a standard string token. Raises an `XKException` if unsuccessful.
+		  ///
+		  /// Assumes we have just consumed the opening quote `"`:
+		  /// ```
+		  /// s = "Hello world"
+		  ///      ^
+		  /// ```
+		  ///
+		  /// Strings very closely mimic Wren's strings (https://wren.io/values.html)
+		  /// Standard strings are surrounded in double quotes: `"hi there"`
+		  /// They can also span multiple lines. When they do, the newline character within the string will always 
+		  /// be normalised to &u0A (`\n`):
+		  ///
+		  /// ```
+		  /// "hi
+		  /// there,
+		  /// again"
+		  /// ```
+		  ///
+		  /// Equates to: `"hi\nthere\nagain"`
+		  ///
+		  /// A handful of escape sequences are supported:
+		  '     `\"`         // A double quote character.
+		  '     `\\`         // A backslash.
+		  '     `\b`         // Backspace.
+		  '     `\e`         // ESC character.
+		  '     `\n`         // Newline.
+		  '     `\r`         // Carriage return.
+		  '     `\t`         // Tab.
+		  '     `\u0041`     // Unicode code point (4 hex digits)
+		  '     `\U0001F64A` // Unicode code point (8 hex digits)
+		  
+		  Var startLine As Integer = mLineNumber
+		  
+		  Var lexeme() As String
+		  While Not AtEnd
+		    Select Case Peek
+		    Case """"
+		      Advance
+		      // Need to see whitespace, `]`, a comma or EOF
+		      Select Case Peek
+		      Case " ", &u09, &u0A, "]", ",", ""
+		        Return New XOOLKit.XKToken(XKTokenTypes.StringLiteral, mTokenStart, startLine, _
+		        String.FromArray(lexeme, ""))
+		      Else
+		        SyntaxError("Expected whitespace, comma, `]` or EOF.")
+		      End Select
+		      
+		    Case "\"
+		      Advance
+		      Select Case Peek
+		      Case """"
+		        lexeme.Add(Consume)
+		        
+		      Case "\"
+		        lexeme.Add(Consume)
+		        
+		      Case "b"
+		        Advance
+		        lexeme.Add(&u08)
+		        
+		      Case "e"
+		        Advance
+		        lexeme.Add(&u27)
+		        
+		      Case "n"
+		        Advance
+		        lexeme.Add(&u0a)
+		        
+		      Case "r"
+		        Advance
+		        lexeme.Add(&u13)
+		        
+		      Case "t"
+		        Advance
+		        lexeme.Add(&u09)
+		        
+		      Else
+		        If Peek.IsExactly("u") Then
+		          Advance
+		          // Need to see four hex digits.
+		          If Peek.IsHexDigit And Peek(2).IsHexDigit And Peek(3).IsHexDigit And Peek(4).IsHexDigit Then
+		            Var codepointString As String = Consume + Consume + Consume + Consume
+		            Var codepoint As Integer = Integer.FromHex(codepointString)
+		            Try
+		              lexeme.Add(Text.FromUnicodeCodepoint(codepoint))
+		            Catch e As RuntimeException
+		              SyntaxError("Invalid unicode codepoint: `\u" + codepointString + ".")
+		            End Try
+		          Else
+		            SyntaxError("Expected four hex digits after `\u`.")
+		          End If
+		          
+		        ElseIf Peek.IsExactly("U") Then
+		          Advance
+		          // Need to see eight hex digits.
+		          If Peek.IsHexDigit And Peek(2).IsHexDigit And Peek(3).IsHexDigit And Peek(4).IsHexDigit And _
+		            Peek(5).IsHexDigit And Peek(6).IsHexDigit And Peek(7).IsHexDigit And Peek(8).IsHexDigit Then
+		            Var codepointString As String = Consume + Consume + Consume + Consume + _
+		            Consume + Consume + Consume + Consume
+		            Var codepoint As Integer = Integer.FromHex(codepointString)
+		            Try
+		              lexeme.Add(Text.FromUnicodeCodepoint(codepoint))
+		            Catch e As RuntimeException
+		              SyntaxError("Invalid unicode codepoint: `\U" + codepointString + ".")
+		            End Try
+		          Else
+		            SyntaxError("Expected eight hex digits after `\U`.")
+		          End If
+		          
+		        Else
+		          SyntaxError("Unknown string escape sequence `\" + Peek + "`.")
+		        End If
+		      End Select
+		      
+		    Else
+		      lexeme.Add(Consume)
+		    End Select
+		  Wend
+		  
+		  // Unterminated raw string.
+		  SyntaxError("Unterminated raw string literal.")
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h21, Description = 417474656D70747320746F20616464206120737472696E6720746F6B656E2E2052616973657320616E2060584B457863657074696F6E6020696620756E7375636365737366756C2E
+		Private Function StringToken() As XOOLKit.XKToken
+		  /// Attempts to add a string token. Raises an `XKException` if unsuccessful.
+		  ///
+		  /// Assumes we have just consumed a `"`:
+		  /// ```
+		  /// s = "Hello world"
+		  ///      ^
+		  /// ```
+		  ///
+		  /// Strings mimic Wren's strings (https://wren.io/values.html)
+		  
+		  // =======================
+		  // RAW STRING
+		  // =======================
+		  If Peek = """" And Peek(2) = """" Then
+		    Advance(2)
+		    Return RawStringToken
+		  End If
+		  
+		  // =======================
+		  // STANDARD STRING
+		  // =======================
+		  Return StandardStringToken
+		  
+		End Function
+	#tag EndMethod
+
 	#tag Method, Flags = &h21, Description = 52616973657320616E2060584B457863657074696F6E60207769746820606D657373616765602061742060616273506F7360206F6E206C696E6520606C696E654E756D626572602E
-		Private Sub SyntaxError(message As String, lineNumber As Integer, absPos As Integer)
-		  /// Raises an `XKException` with `message` at `absPos` on line `lineNumber`.
+		Private Sub SyntaxError(message As String)
+		  /// Raises an `XKException` with `message` at `mCurrent` on line `mLineNumber`.
 		  
 		  #Pragma BreakOnExceptions False
 		  
-		  Raise New XOOLKit.XKException(message, lineNumber, absPos)
+		  Raise New XOOLKit.XKException(message, mLineNumber, mCurrent)
 		End Sub
 	#tag EndMethod
 
@@ -543,17 +796,17 @@ Protected Class XKTokeniser
 		  
 		  // Consume the two digit minute value.
 		  If Not Consume.IsDigit Or Not Consume.IsDigit Then
-		    SyntaxError("Invalid DateTime. Expected a two digit minute value.", mLineNumber, mCurrent)
+		    SyntaxError("Invalid DateTime. Expected a two digit minute value.")
 		  End if
 		  
 		  // Must see a colon.
 		  If Consume <> ":" Then
-		    SyntaxError("Invalid DateTime. Expected colon after the minute value.", mLineNumber, mCurrent)
+		    SyntaxError("Invalid DateTime. Expected colon after the minute value.")
 		  End If
 		  
 		  // Consume the two digit seconds value.
 		  If Not Consume.IsDigit Or Not Consume.IsDigit Then
-		    SyntaxError("Invalid DateTime. Expected a two digit seconds value.", mLineNumber, mCurrent)
+		    SyntaxError("Invalid DateTime. Expected a two digit seconds value.")
 		  End if
 		  
 		  // Must see whitespace or EOF.
@@ -567,11 +820,11 @@ Protected Class XKTokeniser
 		    Try
 		      d = New DateTime(now.Year, now.Month, now.Day, hour, minute, second)
 		    Catch e As RuntimeException
-		      SyntaxError("Invalid DateTime. " + e.Message, mLineNumber, mCurrent)
+		      SyntaxError("Invalid DateTime. " + e.Message)
 		    End Try
-		    Return New XOOLKit.XKDateTimeToken(mTokenStart, mLineNumber, lexeme.Length, d)
+		    Return New XOOLKit.XKDateTimeToken(mTokenStart, mLineNumber, d)
 		  Else
-		    SyntaxError("Invalid DateTime. Expected whitespace or EOF.", mLineNumber, mCurrent)
+		    SyntaxError("Invalid DateTime. Expected whitespace or EOF.")
 		  End If
 		  
 		End Function

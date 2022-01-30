@@ -2,8 +2,10 @@
 Protected Class XKColorToken
 Inherits XOOLKit.XKToken
 	#tag Method, Flags = &h0
-		Sub Constructor(tokenStart As Integer, lineNumber As Integer, length As Integer, colorString As String)
-		  Super.Constructor(XKTokenTypes.ColorLiteral, tokenStart, lineNumber, length)
+		Sub Constructor(tokenStart As Integer, lineNumber As Integer, colorString As String)
+		  Super.Constructor(XKTokenTypes.ColorLiteral, tokenStart, lineNumber)
+		  
+		  Var length As Integer = colorString.Length
 		  
 		  // Sanity check.
 		  If length < 3 Or length > 8 Then

@@ -2,8 +2,8 @@
 Protected Class XKDateTimeToken
 Inherits XOOLKit.XKToken
 	#tag Method, Flags = &h0
-		Sub Constructor(tokenStart As Integer, lineNumber As Integer, length As Integer, value As DateTime)
-		  Super.Constructor(XKTokenTypes.DateTime, tokenStart, lineNumber, length)
+		Sub Constructor(tokenStart As Integer, lineNumber As Integer, value As DateTime)
+		  Super.Constructor(XKTokenTypes.DateTime, tokenStart, lineNumber)
 		  Self.Value = value
 		  
 		End Sub
