@@ -39,8 +39,6 @@ Protected Class XKTokeniser
 		  
 		  If Not Match("c") Then SyntaxError("Expected `c` at start of Color literal.", mLineNumber, mCurrent)
 		  
-		  Var lexeme() As String
-		  
 		  // Need to see at least 3 hex digits.
 		  If Not Consume.IsHexDigit Or Not Consume.IsHexDigit Or Not Consume.IsHexDigit Then
 		    SyntaxError("Expected a hexadecimal digit.", mLineNumber, mCurrent)
@@ -49,10 +47,7 @@ Protected Class XKTokeniser
 		  // 3 digit Color literal?
 		  Var s As String = Peek
 		  If s.IsSpaceOrTabOrNewline Or s = "" Then
-		    For i As Integer = mTokenStart + 2 To mCurrent - 1
-		      lexeme.Add(mCharacters(i))
-		    Next i
-		    Return New XKColorToken(mTokenStart, mLineNumber, 3, String.FromArray(lexeme, ""))
+		    Return New XKColorToken(mTokenStart, mLineNumber, 3, ComputeLexeme(mTokenStart + 2, mCurrent - 1))
 		  End If
 		  
 		  // Need to see at least 3 more hex digits.
@@ -63,10 +58,7 @@ Protected Class XKTokeniser
 		  // 6 digit Color literal?
 		  s = Peek
 		  If s.IsSpaceOrTabOrNewline Or s = "" Then
-		    For i As Integer = mTokenStart + 2 To mCurrent - 1
-		      lexeme.Add(mCharacters(i))
-		    Next i
-		    Return New XKColorToken(mTokenStart, mLineNumber, 6, String.FromArray(lexeme, ""))
+		    Return New XKColorToken(mTokenStart, mLineNumber, 6, ComputeLexeme(mTokenStart + 2, mCurrent - 1))
 		  End If
 		  
 		  // 8 digit Color literal?
@@ -74,10 +66,7 @@ Protected Class XKTokeniser
 		    Advance(2)
 		    s = Peek
 		    If s.IsSpaceOrTabOrNewline Or s = "" Then
-		      For i As Integer = mTokenStart + 2 To mCurrent - 1
-		        lexeme.Add(mCharacters(i))
-		      Next i
-		      Return New XKColorToken(mTokenStart, mLineNumber, 8, String.FromArray(lexeme, ""))
+		      Return New XKColorToken(mTokenStart, mLineNumber, 8, ComputeLexeme(mTokenStart + 2, mCurrent - 1))
 		    Else
 		      // Invalid character after these 8 hex digits.
 		      SyntaxError("Expected whitespace or EOF after Color literal,", mLineNumber, mCurrent)
@@ -110,6 +99,22 @@ Protected Class XKTokeniser
 		  
 		  Return MakeToken(XKTokenTypes.Comment)
 		  
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h21, Description = 436F6D7075746573206120746F6B656E2773206C6578656D652066726F6D20606D43686172616374657273287374617274296020746F20606D436861726163746572732866696E697368296020696E636C75736976652E
+		Private Function ComputeLexeme(start As Integer, finish As Integer) As String
+		  /// Computes a token's lexeme from `mCharacters(start)` to `mCharacters(finish)` inclusive.
+		  ///
+		  /// Assumes `start` and `finish` are valid indices.
+		  
+		  Var s() As String
+		  
+		  For i As Integer = start To finish
+		    s.Add(mCharacters(i))
+		  Next i
+		  
+		  Return String.FromArray(s, "")
 		End Function
 	#tag EndMethod
 
@@ -146,7 +151,123 @@ Protected Class XKTokeniser
 		  ///  ^
 		  /// ```
 		  
-		  #Pragma Warning "TODO"
+		  // Need to see at least one digit.
+		  If Not Peek.IsDigit Then
+		    SyntaxError("Invalid DateTime. Expected a digit.", mLineNumber, mCurrent)
+		  Else
+		    Advance
+		  End If
+		  
+		  // Could this be a time token?
+		  If Peek = ":" Then
+		    Advance
+		    Return TimeToken
+		  End If
+		  
+		  Var lexeme As String
+		  
+		  // Consume the year (two more digits).
+		  If Not Consume.IsDigit Or Not Consume.IsDigit Then
+		    SyntaxError("Invalid DateTime. Expected a four digit year.", mLineNumber, mCurrent)
+		  End If
+		  
+		  // Must see a hyphen.
+		  If Consume <> "-" Then
+		    SyntaxError("Invalid DateTime. Expected a `-` after the year.", mLineNumber, mCurrent)
+		  End If
+		  
+		  // Consume the two digit month.
+		  If Not Consume.IsDigit Or Not Consume.IsDigit Then
+		    SyntaxError("Invalid DateTime. Expected a two digit month.", mLineNumber, mCurrent)
+		  End If
+		  
+		  // Must see a hyphen.
+		  If Consume <> "-" Then
+		    SyntaxError("Invalid DateTime. Expected a `-` after the month.", mLineNumber, mCurrent)
+		  End If
+		  
+		  // Consume the two digit day.
+		  If Not Consume.IsDigit Or Not Consume.IsDigit Then
+		    SyntaxError("Invalid DateTime. Expected a two digit day.", mLineNumber, mCurrent)
+		  End If
+		  
+		  // Full DateTime? Must see a space followed by a digit (e.g: `2021-12-25 09:15:00`).
+		  If Peek = " " And Peek(2).IsDigit Then
+		    Advance
+		    Return FullDateTimeToken
+		  End If
+		  
+		  // Must see whitespace or EOF for this to be a date.
+		  If Peek.IsSpaceOrTabOrNewline Or Peek = "" Then
+		    lexeme = ComputeLexeme(mTokenStart, mCurrent - 1)
+		    Var d As DateTime
+		    Try
+		      d = DateTime.FromString(lexeme)
+		    Catch e As RuntimeException
+		      SyntaxError("Invalid DateTime. " + e.Message, mLineNumber, mCurrent)
+		    End Try
+		    Return New XOOLKit.XKDateTimeToken(mTokenStart, mLineNumber, lexeme.Length, d)
+		  Else
+		    SyntaxError("Invalid DateTime. Expected whitespace or EOF.", mLineNumber, mCurrent)
+		  End If
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h21, Description = 417474656D70747320746F2061646420612066756C6C204461746554696D6520746F6B656E2E2052616973657320616E2060584B457863657074696F6E6020696620756E7375636365737366756C2E
+		Private Function FullDateTimeToken() As XOOLKit.XKDateTimeToken
+		  /// Attempts to add a full DateTime token. Raises an `XKException` if unsuccessful.
+		  ///
+		  /// Assumes we have just consumed the space after the minute value.
+		  ///
+		  /// ```
+		  /// 2021-12-25 09:15:00
+		  ///            ^
+		  /// ```
+		  
+		  // Consume the two digit hour value.
+		  If Not Consume.IsDigit Or Not Consume.IsDigit Then
+		    SyntaxError("Invalid DateTime. Expected a two digit hour value.", mLineNumber, mCurrent)
+		  End if
+		  
+		  // Must see a colon.
+		  If Consume <> ":" Then
+		    SyntaxError("Invalid DateTime. Expected colon after the hour value.", mLineNumber, mCurrent)
+		  End If
+		  
+		  // Consume the two digit minute value.
+		  If Not Consume.IsDigit Or Not Consume.IsDigit Then
+		    SyntaxError("Invalid DateTime. Expected a two digit minute value.", mLineNumber, mCurrent)
+		  End if
+		  
+		  // Must see a colon.
+		  If Consume <> ":" Then
+		    SyntaxError("Invalid DateTime. Expected colon after the minute value.", mLineNumber, mCurrent)
+		  End If
+		  
+		  // Consume the two digit seconds value.
+		  If Not Consume.IsDigit Or Not Consume.IsDigit Then
+		    SyntaxError("Invalid DateTime. Expected a two digit seconds value.", mLineNumber, mCurrent)
+		  End if
+		  
+		  // Must see whitespace or EOF.
+		  If Peek.IsSpaceOrTabOrNewline Or Peek = "" Then
+		    Var s As String = ComputeLexeme(mTokenStart, mCurrent - 1)
+		    Var year As Integer = Integer.FromString(s.Left(4))
+		    Var month As Integer = Integer.FromString(s.Middle(5, 2))
+		    Var day As Integer = Integer.FromString(s.Middle(8, 2))
+		    Var hour As Integer = Integer.FromString(s.Middle(11, 2))
+		    Var minute As Integer = Integer.FromString(s.Middle(14, 2))
+		    Var second As Integer = Integer.FromString(s.Middle(17, 2))
+		    Var d As DateTime
+		    Try
+		      d = New DateTime(year, month, day, hour, minute, second)
+		    Catch e As RuntimeException
+		      SyntaxError("Invalid DateTime. " + e.Message, mLineNumber, mCurrent)
+		    End Try
+		    Return New XOOLKit.XKDateTimeToken(mTokenStart, mLineNumber, s.Length, d)
+		  Else
+		    SyntaxError("Invalid DateTime. Expected whitespace or EOF.", mLineNumber, mCurrent)
+		  End If
 		  
 		End Function
 	#tag EndMethod
@@ -163,11 +284,8 @@ Protected Class XKTokeniser
 		    
 		  Else
 		    // All other tokens store their lexeme.
-		    Var lexeme() As String
-		    For i As Integer = mTokenStart To mCurrent - 1
-		      lexeme.Add(mCharacters(i))
-		    Next i
-		    Return New XKToken(type, mTokenStart, mLineNumber, mCurrent - mTokenStart, String.FromArray(lexeme, ""))
+		    Return New XKToken(type, mTokenStart, mLineNumber, mCurrent - mTokenStart, _
+		    ComputeLexeme(mTokenStart, mCurrent - 1))
 		    
 		  End Select
 		  
@@ -331,11 +449,7 @@ Protected Class XKTokeniser
 		  
 		  // Need to see whitespace or EOF
 		  If Peek.IsSpaceOrTabOrNewline Or Peek = "" Then
-		    Var s() As String
-		    For i As Integer = mTokenStart To mCurrent - 1
-		      s.Add(mCharacters(i))
-		    Next i
-		    Var lexeme As String = String.FromArray(s, "")
+		    Var lexeme As String = ComputeLexeme(mTokenStart, mCurrent - 1)
 		    If isInteger Then
 		      Return New XKNumberToken(mTokenStart, mLineNumber, lexeme.Length, Integer.FromString(lexeme), True)
 		    Else
@@ -414,6 +528,53 @@ Protected Class XKTokeniser
 		  
 		  Raise New XOOLKit.XKException(message, lineNumber, absPos)
 		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h21, Description = 417474656D70747320746F206164642061204461746554696D652074696D6520746F6B656E2E2052616973657320616E2060584B457863657074696F6E6020696620756E7375636365737366756C2E
+		Private Function TimeToken() As XOOLKit.XKDateTimeToken
+		  /// Attempts to add a DateTime time token. Raises an `XKException` if unsuccessful.
+		  ///
+		  /// Assumes we have just consumed the first colon and there were two preceding digits.
+		  ///
+		  /// ```
+		  /// 07:32:00
+		  ///    ^
+		  /// ```
+		  
+		  // Consume the two digit minute value.
+		  If Not Consume.IsDigit Or Not Consume.IsDigit Then
+		    SyntaxError("Invalid DateTime. Expected a two digit minute value.", mLineNumber, mCurrent)
+		  End if
+		  
+		  // Must see a colon.
+		  If Consume <> ":" Then
+		    SyntaxError("Invalid DateTime. Expected colon after the minute value.", mLineNumber, mCurrent)
+		  End If
+		  
+		  // Consume the two digit seconds value.
+		  If Not Consume.IsDigit Or Not Consume.IsDigit Then
+		    SyntaxError("Invalid DateTime. Expected a two digit seconds value.", mLineNumber, mCurrent)
+		  End if
+		  
+		  // Must see whitespace or EOF.
+		  If Peek.IsSpaceOrTabOrNewline Or Peek = "" Then
+		    Var lexeme As String = ComputeLexeme(mTokenStart, mCurrent - 1)
+		    Var hour As Integer = Integer.FromString(lexeme.Left(2))
+		    Var minute As Integer = Integer.FromString(lexeme.Middle(3, 2))
+		    Var second As Integer = Integer.FromString(lexeme.Middle(6, 2))
+		    Var now As DateTime = DateTime.Now
+		    Var d As DateTime
+		    Try
+		      d = New DateTime(now.Year, now.Month, now.Day, hour, minute, second)
+		    Catch e As RuntimeException
+		      SyntaxError("Invalid DateTime. " + e.Message, mLineNumber, mCurrent)
+		    End Try
+		    Return New XOOLKit.XKDateTimeToken(mTokenStart, mLineNumber, lexeme.Length, d)
+		  Else
+		    SyntaxError("Invalid DateTime. Expected whitespace or EOF.", mLineNumber, mCurrent)
+		  End If
+		  
+		End Function
 	#tag EndMethod
 
 	#tag Method, Flags = &h0, Description = 546F6B656E69736573206120584F4F4C20646F63756D656E7420696E746F20616E206172726179206F6620584B546F6B656E732E2052616973657320616E2060584B457863657074696F6E602069662060736020697320696E76616C69642E

@@ -177,6 +177,9 @@ End
 		    Case XKTokenTypes.ColorLiteral
 		      lexeme = XOOLKit.XKColorToken(t).MyColor.ToString
 		      
+		    Case XKTokenTypes.DateTime
+		      lexeme = XOOLKit.XKDateTimeToken(t).Value.ToString
+		      
 		    Else
 		      lexeme = t.Lexeme
 		    End Select
