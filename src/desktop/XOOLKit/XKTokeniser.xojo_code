@@ -272,14 +272,17 @@ Protected Class XKTokeniser
 		End Function
 	#tag EndMethod
 
-	#tag Method, Flags = &h21, Description = 417474656D70747320746F2061646420616E206964656E746966657220746F6B656E2E2052616973657320616E2060584B457863657074696F6E6020696620756E7375636365737366756C2E
-		Private Function IdentifierToken() As XKToken
-		  /// Attempts to add an identifer token. Raises an `XKException` if unsuccessful.
+	#tag Method, Flags = &h21, Description = 417474656D70747320746F2061646420616E206964656E7469666572206F7220626F6F6C65616E20746F6B656E2E2052616973657320616E2060584B457863657074696F6E6020696620756E7375636365737366756C2E
+		Private Function IdentifierOrBooleanToken() As XKToken
+		  /// Attempts to add an identifer or boolean token. Raises an `XKException` if unsuccessful.
 		  ///
 		  /// Assumes we have just consumed an ASCII letter or underscore.
 		  ///
 		  /// ```
 		  /// abc
+		  ///  ^
+		  ///
+		  /// true
 		  ///  ^
 		  /// ```
 		  ///
@@ -290,7 +293,17 @@ Protected Class XKTokeniser
 		    Advance
 		  Wend
 		  
-		  Return MakeToken(XKTokenTypes.Identifier)
+		  // Compute the lexeme. Use it to distinguish between a boolean and an identifier token.
+		  Var lexeme As String = ComputeLexeme(mTokenStart, mCurrent - 1)
+		  If lexeme = "True" Then // Case insensitive.
+		    Return New XKBooleanToken(mTokenStart, mLineNumber, True)
+		    
+		  ElseIf lexeme = "False" Then // Case insensitive.
+		    Return New XKBooleanToken(mTokenStart, mLineNumber, False)
+		    
+		  Else
+		    Return New XKToken(XKTokenTypes.Identifier, mTokenStart, mLineNumber, lexeme)
+		  End If
 		  
 		End Function
 	#tag EndMethod
@@ -341,7 +354,17 @@ Protected Class XKTokeniser
 		  
 		  Var char As String = Consume
 		  
-		  If char = &u0A Then Return MakeToken(XKTokenTypes.EOL)
+		  // Only add line endings if we're not in an array.
+		  If char = &u0A Then
+		    If mState <> XKTokeniserStates.InArray Then
+		      Return MakeToken(XKTokenTypes.EOL)
+		    Else
+		      SkipWhitespace
+		      mTokenStart = mCurrent
+		      If AtEnd Then Return MakeToken(XKTokenTypes.EOF)
+		      char = Consume
+		    End If
+		  End If
 		  
 		  // ========================
 		  // COMMENT
@@ -357,8 +380,10 @@ Protected Class XKTokeniser
 		  
 		  // Square bracket?
 		  If char = "[" Then
+		    mState = XKTokeniserStates.InArray
 		    Return MakeToken(XKTokenTypes.LSquare)
 		  ElseIf char = "]" Then
+		    mState = XKTokeniserStates.Normal
 		    Return MakeToken(XKTokenTypes.RSquare)
 		  End If
 		  
@@ -403,7 +428,7 @@ Protected Class XKTokeniser
 		  // ========================
 		  // IDENTIFIERS
 		  // ========================
-		  If char.IsASCIILetter Then Return IdentifierToken
+		  If char.IsASCIILetter Then Return IdentifierOrBooleanToken
 		  
 		  SyntaxError("Unexpected character `" + char + "`.")
 		  
@@ -594,6 +619,7 @@ Protected Class XKTokeniser
 		  mTokenStart = 0
 		  mLineNumber = 1
 		  mPreviousToken = New XKToken(XKTokenTypes.Undefined, 0, 1)
+		  mState = XKTokeniserStates.Normal
 		End Sub
 	#tag EndMethod
 
@@ -779,7 +805,7 @@ Protected Class XKTokeniser
 		  
 		  #Pragma BreakOnExceptions False
 		  
-		  Raise New XOOLKit.XKException(message, mLineNumber, mCurrent)
+		  Raise New XOOLKit.XKTokeniserException(message, mLineNumber, mCurrent)
 		End Sub
 	#tag EndMethod
 
@@ -841,17 +867,31 @@ Protected Class XKTokeniser
 		  Var t As XOOLKit.XKToken
 		  While Not AtEnd
 		    t = NextToken
-		    If t.Type = XKTokenTypes.EOL Then
+		    
+		    Select Case t.Type
+		    Case XKTokenTypes.EOL
 		      // Don't add contiguous EOL tokens - they'll confuse the parser.
 		      If mPreviousToken.Type <> XKTokenTypes.EOL Then tokens.Add(t)
+		      
+		    Case XKTokenTypes.Comment
+		      // Don't add comment tokens as they're meaningless.
+		      
 		    Else
 		      tokens.Add(t)
-		    End If
+		    End Select
+		    
 		    mPreviousToken = t
 		  Wend
 		  
-		  // Remove the trailing EOF if present.
-		  If mPreviousToken.Type = XKTokenTypes.EOF Then Call tokens.Pop
+		  // Edge case: The first token is a superfluous EOL.
+		  If tokens.Count > 0 And tokens(0).Type = XKTokenTypes.EOL Then tokens.RemoveAt(0)
+		  
+		  // Ensure there is a trailing EOF token.
+		  If tokens.Count = 0 Then
+		    tokens.Add(New XKToken(XKTokenTypes.EOF, s.Length, mLineNumber))
+		  ElseIf tokens(tokens.LastIndex).Type <> XKTokenTypes.EOF Then
+		    tokens.Add(New XKToken(XKTokenTypes.EOF, s.Length, mLineNumber))
+		  End If
 		  
 		  Return tokens
 		  
@@ -879,9 +919,19 @@ Protected Class XKTokeniser
 		Private mPreviousToken As XOOLKit.XKToken
 	#tag EndProperty
 
+	#tag Property, Flags = &h21, Description = 5468652063757272656E742073746174652074686520746F6B656E6973657220697320696E2E
+		Private mState As XKTokeniserStates = XKTokeniserStates.Normal
+	#tag EndProperty
+
 	#tag Property, Flags = &h21, Description = 302D626173656420696E64657820696E20606D4368617261637465727360206F662074686520666972737420636861726163746572206F662074686520746F6B656E2063757272656E746C79206265696E672070726F6365737365642E
 		Private mTokenStart As Integer = 0
 	#tag EndProperty
+
+
+	#tag Enum, Name = XKTokeniserStates, Type = Integer, Flags = &h0
+		InArray
+		Normal
+	#tag EndEnum
 
 
 	#tag ViewBehavior

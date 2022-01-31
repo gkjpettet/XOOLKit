@@ -150,18 +150,76 @@ Begin DesktopWindow WinTest
       _ScrollOffset   =   0
       _ScrollWidth    =   -1
    End
+   Begin DesktopButton ButtonParse
+      AllowAutoDeactivate=   True
+      Bold            =   False
+      Cancel          =   False
+      Caption         =   "Parse"
+      Default         =   False
+      Enabled         =   True
+      FontName        =   "System"
+      FontSize        =   0.0
+      FontUnit        =   0
+      Height          =   20
+      Index           =   -2147483648
+      Italic          =   False
+      Left            =   112
+      LockBottom      =   True
+      LockedInPosition=   False
+      LockLeft        =   True
+      LockRight       =   False
+      LockTop         =   False
+      MacButtonStyle  =   0
+      Scope           =   2
+      TabIndex        =   3
+      TabPanelIndex   =   0
+      TabStop         =   True
+      Tooltip         =   ""
+      Top             =   670
+      Transparent     =   False
+      Underline       =   False
+      Visible         =   True
+      Width           =   80
+   End
 End
 #tag EndDesktopWindow
 
 #tag WindowCode
+	#tag Method, Flags = &h21
+		Private Sub Parse()
+		  Tokenise
+		  
+		  mParser = New XOOLKit.XKParser
+		  Var d As Dictionary = mParser.Parse(mTokens)
+		  
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h21
+		Private Sub Tokenise()
+		  mTokeniser = New XOOLKit.XKTokeniser
+		  
+		  mTokens.RemoveAll
+		  
+		  Try
+		    mTokens = mTokeniser.Tokenise(Input.Text)
+		    UpdateTokensListbox
+		    
+		  Catch e As XOOLKit.XKTokeniserException
+		    MessageBox("" + e.LineNumber.ToString + ", " + e.AbsolutePosition.ToString + ": " + e.Message)
+		    
+		  End Try
+		End Sub
+	#tag EndMethod
+
 	#tag Method, Flags = &h21, Description = 557064617465732074686520746F6B656E73206C697374626F7820776974682060746F6B656E73602E
-		Private Sub UpdateTokensListbox(tokens() As XOOLKit.XKToken)
-		  /// Updates the tokens listbox with `tokens`.
+		Private Sub UpdateTokensListbox()
+		  /// Updates the tokens listbox with `mTokens`.
 		  
 		  TokensListbox.RemoveAllRows
 		  
 		  Var lexeme As String
-		  For Each t As XOOLKit.XKToken In tokens
+		  For Each t As XOOLKit.XKToken In mTokens
 		    
 		    TokensListbox.AddRow( _
 		    t.LineNumber.ToString, _
@@ -179,6 +237,9 @@ End
 		    Case XKTokenTypes.DateTime
 		      lexeme = XOOLKit.XKDateTimeToken(t).Value.ToString
 		      
+		    Case XKTokenTypes.BooleanLiteral
+		      lexeme = If(XOOLKit.XKBooleanToken(t).Value, "True", "False")
+		      
 		    Else
 		      lexeme = t.Lexeme
 		    End Select
@@ -189,6 +250,19 @@ End
 		  
 		End Sub
 	#tag EndMethod
+
+
+	#tag Property, Flags = &h21, Description = 546865207061727365722E
+		Private mParser As XOOLKit.XKParser
+	#tag EndProperty
+
+	#tag Property, Flags = &h21, Description = 54686520746F6B656E697365722E
+		Private mTokeniser As XOOLKit.XKTokeniser
+	#tag EndProperty
+
+	#tag Property, Flags = &h21, Description = 54686520746F6B656E732E
+		Private mTokens() As XOOLKit.XKToken
+	#tag EndProperty
 
 
 #tag EndWindowCode
@@ -220,19 +294,253 @@ End
 #tag Events ButtonTokenise
 	#tag Event
 		Sub Pressed()
-		  Var tokeniser As New XOOLKit.XKTokeniser
-		  
-		  Var tokens() As XOOLKit.XKToken
-		  
-		  Try
-		    tokens = tokeniser.Tokenise(Input.Text)
-		    UpdateTokensListbox(tokens)
-		    
-		  Catch e As XOOLKit.XKException
-		    MessageBox("" + e.LineNumber.ToString + ", " + e.AbsolutePosition.ToString + ": " + e.Message)
-		    
-		  End Try
+		  Tokenise
 		  
 		End Sub
 	#tag EndEvent
 #tag EndEvents
+#tag Events ButtonParse
+	#tag Event
+		Sub Pressed()
+		  Parse
+		End Sub
+	#tag EndEvent
+#tag EndEvents
+#tag ViewBehavior
+	#tag ViewProperty
+		Name="Name"
+		Visible=true
+		Group="ID"
+		InitialValue=""
+		Type="String"
+		EditorType=""
+	#tag EndViewProperty
+	#tag ViewProperty
+		Name="Interfaces"
+		Visible=true
+		Group="ID"
+		InitialValue=""
+		Type="String"
+		EditorType=""
+	#tag EndViewProperty
+	#tag ViewProperty
+		Name="Super"
+		Visible=true
+		Group="ID"
+		InitialValue=""
+		Type="String"
+		EditorType=""
+	#tag EndViewProperty
+	#tag ViewProperty
+		Name="Width"
+		Visible=true
+		Group="Size"
+		InitialValue="600"
+		Type="Integer"
+		EditorType=""
+	#tag EndViewProperty
+	#tag ViewProperty
+		Name="Height"
+		Visible=true
+		Group="Size"
+		InitialValue="400"
+		Type="Integer"
+		EditorType=""
+	#tag EndViewProperty
+	#tag ViewProperty
+		Name="MinimumWidth"
+		Visible=true
+		Group="Size"
+		InitialValue="64"
+		Type="Integer"
+		EditorType=""
+	#tag EndViewProperty
+	#tag ViewProperty
+		Name="MinimumHeight"
+		Visible=true
+		Group="Size"
+		InitialValue="64"
+		Type="Integer"
+		EditorType=""
+	#tag EndViewProperty
+	#tag ViewProperty
+		Name="MaximumWidth"
+		Visible=true
+		Group="Size"
+		InitialValue="32000"
+		Type="Integer"
+		EditorType=""
+	#tag EndViewProperty
+	#tag ViewProperty
+		Name="MaximumHeight"
+		Visible=true
+		Group="Size"
+		InitialValue="32000"
+		Type="Integer"
+		EditorType=""
+	#tag EndViewProperty
+	#tag ViewProperty
+		Name="Type"
+		Visible=true
+		Group="Frame"
+		InitialValue="0"
+		Type="Types"
+		EditorType="Enum"
+		#tag EnumValues
+			"0 - Document"
+			"1 - Movable Modal"
+			"2 - Modal Dialog"
+			"3 - Floating Window"
+			"4 - Plain Box"
+			"5 - Shadowed Box"
+			"6 - Rounded Window"
+			"7 - Global Floating Window"
+			"8 - Sheet Window"
+			"9 - Metal Window"
+			"11 - Modeless Dialog"
+		#tag EndEnumValues
+	#tag EndViewProperty
+	#tag ViewProperty
+		Name="Title"
+		Visible=true
+		Group="Frame"
+		InitialValue="Untitled"
+		Type="String"
+		EditorType=""
+	#tag EndViewProperty
+	#tag ViewProperty
+		Name="HasCloseButton"
+		Visible=true
+		Group="Frame"
+		InitialValue="True"
+		Type="Boolean"
+		EditorType=""
+	#tag EndViewProperty
+	#tag ViewProperty
+		Name="HasMaximizeButton"
+		Visible=true
+		Group="Frame"
+		InitialValue="True"
+		Type="Boolean"
+		EditorType=""
+	#tag EndViewProperty
+	#tag ViewProperty
+		Name="HasMinimizeButton"
+		Visible=true
+		Group="Frame"
+		InitialValue="True"
+		Type="Boolean"
+		EditorType=""
+	#tag EndViewProperty
+	#tag ViewProperty
+		Name="HasFullScreenButton"
+		Visible=true
+		Group="Frame"
+		InitialValue="False"
+		Type="Boolean"
+		EditorType=""
+	#tag EndViewProperty
+	#tag ViewProperty
+		Name="Resizeable"
+		Visible=true
+		Group="Frame"
+		InitialValue="True"
+		Type="Boolean"
+		EditorType=""
+	#tag EndViewProperty
+	#tag ViewProperty
+		Name="Composite"
+		Visible=false
+		Group="OS X (Carbon)"
+		InitialValue="False"
+		Type="Boolean"
+		EditorType=""
+	#tag EndViewProperty
+	#tag ViewProperty
+		Name="MacProcID"
+		Visible=false
+		Group="OS X (Carbon)"
+		InitialValue="0"
+		Type="Integer"
+		EditorType=""
+	#tag EndViewProperty
+	#tag ViewProperty
+		Name="FullScreen"
+		Visible=false
+		Group="Behavior"
+		InitialValue="False"
+		Type="Boolean"
+		EditorType=""
+	#tag EndViewProperty
+	#tag ViewProperty
+		Name="DefaultLocation"
+		Visible=true
+		Group="Behavior"
+		InitialValue="2"
+		Type="Locations"
+		EditorType="Enum"
+		#tag EnumValues
+			"0 - Default"
+			"1 - Parent Window"
+			"2 - Main Screen"
+			"3 - Parent Window Screen"
+			"4 - Stagger"
+		#tag EndEnumValues
+	#tag EndViewProperty
+	#tag ViewProperty
+		Name="Visible"
+		Visible=true
+		Group="Behavior"
+		InitialValue="True"
+		Type="Boolean"
+		EditorType=""
+	#tag EndViewProperty
+	#tag ViewProperty
+		Name="ImplicitInstance"
+		Visible=true
+		Group="Windows Behavior"
+		InitialValue="True"
+		Type="Boolean"
+		EditorType=""
+	#tag EndViewProperty
+	#tag ViewProperty
+		Name="HasBackgroundColor"
+		Visible=true
+		Group="Background"
+		InitialValue="False"
+		Type="Boolean"
+		EditorType=""
+	#tag EndViewProperty
+	#tag ViewProperty
+		Name="BackgroundColor"
+		Visible=true
+		Group="Background"
+		InitialValue="&cFFFFFF"
+		Type="ColorGroup"
+		EditorType="ColorGroup"
+	#tag EndViewProperty
+	#tag ViewProperty
+		Name="Backdrop"
+		Visible=true
+		Group="Background"
+		InitialValue=""
+		Type="Picture"
+		EditorType=""
+	#tag EndViewProperty
+	#tag ViewProperty
+		Name="MenuBar"
+		Visible=true
+		Group="Menus"
+		InitialValue=""
+		Type="DesktopMenuBar"
+		EditorType=""
+	#tag EndViewProperty
+	#tag ViewProperty
+		Name="MenuBarVisible"
+		Visible=true
+		Group="Deprecated"
+		InitialValue="False"
+		Type="Boolean"
+		EditorType=""
+	#tag EndViewProperty
+#tag EndViewBehavior

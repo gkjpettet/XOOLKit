@@ -9,7 +9,7 @@ Inherits XOOLKit.XKToken
 		  
 		  // Sanity check.
 		  If length < 3 Or length > 8 Then
-		    Raise New XKException("Invalid color string.", lineNumber, tokenStart)
+		    Raise New XKTokeniserException("Invalid color string.", lineNumber, tokenStart)
 		  End If
 		  
 		  Var r, g, b As String
@@ -31,11 +31,11 @@ Inherits XOOLKit.XKToken
 		    MyColor = Color.FromString("&h" + colorString)
 		    
 		  Else
-		    Raise New XKException("Invalid color string.", lineNumber, tokenStart)
+		    Raise New XKTokeniserException("Invalid color string.", lineNumber, tokenStart)
 		  End If
 		  
 		  Exception e As RuntimeException
-		    Raise New XKException("Invalid color string. " + e.Message, lineNumber, tokenStart)
+		    Raise New XKTokeniserException("Invalid color string. " + e.Message, lineNumber, tokenStart)
 		    
 		End Sub
 	#tag EndMethod

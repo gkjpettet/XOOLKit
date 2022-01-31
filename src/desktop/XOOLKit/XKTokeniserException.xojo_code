@@ -1,5 +1,5 @@
 #tag Class
-Protected Class XKException
+Protected Class XKTokeniserException
 Inherits RuntimeException
 	#tag Method, Flags = &h0
 		Sub Constructor(message As String, lineNumber As Integer, absPos As Integer)

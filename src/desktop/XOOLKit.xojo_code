@@ -8,6 +8,9 @@ Protected Module XOOLKit
 		  Case XKTokenTypes.ColorLiteral
 		    Return "Color Literal"
 		    
+		  Case XKTokenTypes.BooleanLiteral
+		    Return "Boolean"
+		    
 		  Case XKTokenTypes.Comma
 		    Return "Comma"
 		    
@@ -62,7 +65,8 @@ Protected Module XOOLKit
 
 
 	#tag Enum, Name = XKTokenTypes, Type = Integer, Flags = &h0
-		ColorLiteral
+		BooleanLiteral
+		  ColorLiteral
 		  Comma
 		  Comment
 		  DateTime
