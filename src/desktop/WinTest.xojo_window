@@ -304,6 +304,7 @@ End
 		Sub Pressed()
 		  Var d As Dictionary = Parse
 		  
+		  Break
 		End Sub
 	#tag EndEvent
 #tag EndEvents

@@ -208,6 +208,50 @@ Protected Class XKParser
 		End Sub
 	#tag EndMethod
 
+	#tag Method, Flags = &h21, Description = 50617273657320616E642072657475726E7320612064696374696F6E617279206B65792D76616C7565207061697220284C656674203D206B65792C205269676874203D2076616C7565292E2052616973657320616E2060584B506172736572457863657074696F6E6020696620756E7375636365737366756C2E
+		Private Function DictKeyValue() As Pair
+		  /// Parses and returns a dictionary key-value pair (Left = key, Right = value). 
+		  /// Raises an `XKParserException` if unsuccessful.
+		  ///
+		  /// ```
+		  /// name = "Garry"
+		  /// ^
+		  /// ```
+		  ///
+		  /// dictKeyValue → IDENTIFIER EQUAL dictValue
+		  /// dictValue    → BOOLEAN | COLOR | DATETIME | NIL | NUMBER | STRING
+		  
+		  Consume("Expected a key.", XKTokenTypes.Identifier)
+		  Var key As String = mPreviousToken.Lexeme
+		  
+		  // Need to see an `=` sign.
+		  Consume("Expected `=` after key name.", XKTokenTypes.Equal)
+		  
+		  If Match(XKTokenTypes.BooleanLiteral) Then
+		    Return key : XKBooleanToken(mPreviousToken).Value
+		    
+		  ElseIf Match(XKTokenTypes.ColorLiteral) Then
+		    Return key : XKColorToken(mPreviousToken).MyColor
+		    
+		  ElseIf Match(XKTokenTypes.DateTime) Then
+		    Return key : XKDateTimeToken(mPreviousToken).Value
+		    
+		  ElseIf Match(XKTokenTypes.NilLiteral) Then
+		    Return key : Nil
+		    
+		  ElseIf Match(XKTokenTypes.Number) Then
+		    Return key : XKNumberToken(mPreviousToken).Value
+		    
+		  ElseIf Match(XKTokenTypes.StringLiteral) Then
+		    Return key : mPreviousToken.Lexeme
+		    
+		  Else
+		    Error("Expected a boolean, color, datetime, number or string value or Nil.")
+		  End If
+		  
+		End Function
+	#tag EndMethod
+
 	#tag Method, Flags = &h21, Description = 52616973657320612070617273657220657863657074696F6E20617420606C6F636174696F6E60206F72207468652063757272656E74206C6F636174696F6E206966206E6F74207370656369666965642E
 		Private Sub Error(message As String, location As XOOLKit.XKToken = Nil)
 		  /// Raises a parser exception at `location` or the current location if not specified.
@@ -257,9 +301,31 @@ Protected Class XKParser
 		  /// ```
 		  ///
 		  /// inlineDict   → LCURLY dictKeyValue* RCURLY
-		  /// dictKeyValue → IDENTIFIER EQUAL literal
+		  /// dictKeyValue → IDENTIFIER EQUAL literals
 		  
-		  #Pragma Warning "TODO"
+		  Var d As New Dictionary
+		  
+		  // Edge case: Empty dictionary.
+		  If Match(XKTokenTypes.RCurly) Then Return d
+		  
+		  // Get the first key-value pair.
+		  Var kv As Pair = DictKeyValue
+		  d.Value(kv.Left) = kv.Right
+		  
+		  // Additional key-values?
+		  While Match(XKTokenTypes.Comma)
+		    kv = DictKeyValue
+		    If d.HasKey(kv.Left) Then
+		      Error("Redefined dictionary key `" + kv.Left.StringValue + "`.")
+		    Else
+		      d.Value(kv.Left) = kv.Right
+		    End If
+		  Wend
+		  
+		  // Need to see a closing brace.
+		  Consume("Expected a `}`.", XKTokenTypes.RCurly)
+		  
+		  Return d
 		  
 		End Function
 	#tag EndMethod
@@ -418,8 +484,8 @@ Protected Class XKParser
 		  /// If successful the dictionary is created if needed and set to `mCurrentDictionary`.
 		  /// Assumes the previous token was a `[`.
 		  ///
-		  /// standardDict → LSQUARE key RSQUARE
-		  /// key          → IDENTIFIER (DOT IDENTIFIER)*
+		  /// standardDict → LSQUARE path RSQUARE
+		  /// path          → IDENTIFIER (DOT IDENTIFIER)*
 		  
 		  #Pragma Warning "TODO"
 		  
