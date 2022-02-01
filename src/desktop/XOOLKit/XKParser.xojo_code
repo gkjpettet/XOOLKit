@@ -35,6 +35,13 @@ Protected Class XKParser
 		  
 		  #Pragma Warning "TODO"
 		  
+		  // Empty array?
+		  If Match(XKTokenTypes.RSquare) Then
+		    Var result() As Variant
+		    Return result
+		  End If
+		  
+		  
 		End Function
 	#tag EndMethod
 
@@ -140,7 +147,7 @@ Protected Class XKParser
 		  ///
 		  /// keyValue   → key EQUAL value terminator
 		  /// key        → IDENTIFIER (DOT IDENTIFIER)*
-		  /// value      → literal | ARRAY | inlineDict
+		  /// value      → literal | array | inlineDict
 		  /// terminator → EOL | EOF
 		  ///
 		  /// E.g:
@@ -312,7 +319,8 @@ Protected Class XKParser
 		Private Function Value() As Variant
 		  /// Parses and returns the value component of a key-value pair.
 		  ///
-		  /// value → STRING | NUMBER | BOOLEAN | COLOR | DATETIME | array | inlineDict
+		  /// value →   literal | array | inlineDict
+		  /// literal → STRING | NUMBER | BOOLEAN | COLOR | DATETIME | NIL
 		  
 		  If Match(XKTokenTypes.StringLiteral) Then
 		    Return mPreviousToken.Lexeme
@@ -329,6 +337,9 @@ Protected Class XKParser
 		  ElseIf Match(XKTokenTypes.DateTime) Then
 		    Return XKDateTimeToken(mPreviousToken).Value
 		    
+		  ElseIf Match(XKTokenTypes.NilLiteral) Then
+		    Return Nil
+		    
 		  ElseIf Match(XKTokenTypes.LSquare) Then
 		    Return ArrayValue
 		    
@@ -336,7 +347,7 @@ Protected Class XKParser
 		    Return InlineDict
 		    
 		  Else
-		    Error("Expected a string, number, boolean, color, datetime, array or inline dictionary.")
+		    Error("Expected a string, number, boolean, color, datetime, Nil, array or inline dictionary.")
 		    
 		  End If
 		  

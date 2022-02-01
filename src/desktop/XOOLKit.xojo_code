@@ -41,6 +41,9 @@ Protected Module XOOLKit
 		  Case XKTokenTypes.LSquare
 		    Return "LSquare"
 		    
+		  Case XKTokenTypes.NilLiteral
+		    Return "Nil"
+		    
 		  Case XKTokenTypes.Number
 		    Return "Number"
 		    
@@ -77,6 +80,7 @@ Protected Module XOOLKit
 		  Identifier
 		  LCurly
 		  LSquare
+		  NilLiteral
 		  Number
 		  RCurly
 		  RSquare

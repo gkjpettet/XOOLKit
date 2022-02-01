@@ -272,9 +272,9 @@ Protected Class XKTokeniser
 		End Function
 	#tag EndMethod
 
-	#tag Method, Flags = &h21, Description = 417474656D70747320746F2061646420616E206964656E7469666572206F7220626F6F6C65616E20746F6B656E2E2052616973657320616E2060584B457863657074696F6E6020696620756E7375636365737366756C2E
-		Private Function IdentifierOrBooleanToken() As XKToken
-		  /// Attempts to add an identifer or boolean token. Raises an `XKException` if unsuccessful.
+	#tag Method, Flags = &h21, Description = 417474656D70747320746F2061646420616E206964656E746966657220626F6F6C65616E206F72204E696C20746F6B656E2E2052616973657320616E2060584B457863657074696F6E6020696620756E7375636365737366756C2E
+		Private Function IdentifierBooleanOrNilToken() As XKToken
+		  /// Attempts to add an identifer boolean or Nil token. Raises an `XKException` if unsuccessful.
 		  ///
 		  /// Assumes we have just consumed an ASCII letter or underscore.
 		  ///
@@ -283,6 +283,9 @@ Protected Class XKTokeniser
 		  ///  ^
 		  ///
 		  /// true
+		  ///  ^
+		  ///
+		  /// nil
 		  ///  ^
 		  /// ```
 		  ///
@@ -301,6 +304,9 @@ Protected Class XKTokeniser
 		  ElseIf lexeme = "False" Then // Case insensitive.
 		    Return New XKBooleanToken(mTokenStart, mLineNumber, False)
 		    
+		  ElseIf lexeme = "Nil" Then // Case insensitive.
+		    Return MakeToken(XKTokenTypes.NilLiteral)
+		    
 		  Else
 		    Return New XKToken(XKTokenTypes.Identifier, mTokenStart, mLineNumber, lexeme)
 		  End If
@@ -314,7 +320,8 @@ Protected Class XKTokeniser
 		  
 		  Select Case type
 		  Case XKTokenTypes.Comment, XKTokenTypes.Dot, XKTokenTypes.EOF, XKTokenTypes.EOL, XKTokenTypes.Equal, _
-		    XKTokenTypes.LCurly, XKTokenTypes.LSquare, XKTokenTypes.RCurly, XKTokenTypes.RSquare
+		    XKTokenTypes.LCurly, XKTokenTypes.LSquare, XKTokenTypes.RCurly, XKTokenTypes.RSquare, _
+		    XKTokenTypes.NilLiteral
 		    // These tokens do not store their lexeme.
 		    Return New XKToken(type, mTokenStart, mLineNumber)
 		    
@@ -366,14 +373,14 @@ Protected Class XKTokeniser
 		    End If
 		  End If
 		  
-		  // ========================
+		  // ===========================
 		  // COMMENT
-		  // ========================
+		  // ===========================
 		  If char = "#" Then Return CommentToken
 		  
-		  // ========================
+		  // ===========================
 		  // SINGLE CHARACTER SYMBOLS
-		  // ========================
+		  // ===========================
 		  If char = "=" Then Return MakeToken(XKTokenTypes.Equal)
 		  If char = "." Then Return MakeToken(XKTokenTypes.Dot)
 		  If char = "," Then Return MakeToken(XKTokenTypes.Comma)
@@ -394,14 +401,14 @@ Protected Class XKTokeniser
 		    Return MakeToken(XKTokenTypes.RCurly)
 		  End If
 		  
-		  // ========================
+		  // ===========================
 		  // COLOR LITERALS
-		  // ========================
+		  // ===========================
 		  If char = "&" Then Return ColorToken
 		  
-		  // ========================
+		  // ===========================
 		  // NUMBERS & DATES
-		  // ========================
+		  // ===========================
 		  If char = "-" Then
 		    Var t As XKToken = NumberToken(True)
 		    If t = Nil Then
@@ -420,15 +427,15 @@ Protected Class XKTokeniser
 		    End If
 		  End If
 		  
-		  // ========================
+		  // ===========================
 		  // STRINGS
-		  // ========================
+		  // ===========================
 		  If char = """" Then Return StringToken
 		  
-		  // ========================
-		  // IDENTIFIERS
-		  // ========================
-		  If char.IsASCIILetter Then Return IdentifierOrBooleanToken
+		  // ===========================
+		  // IDENTIFIERS, BOOLEANS & Nil
+		  // ===========================
+		  If char.IsASCIILetter Then Return IdentifierBooleanOrNilToken
 		  
 		  SyntaxError("Unexpected character `" + char + "`.")
 		  
