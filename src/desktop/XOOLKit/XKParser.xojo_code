@@ -346,41 +346,9 @@ Protected Class XKParser
 		  /// `name = "Garry"`
 		  /// `server.ip = "123.123.123.123"`
 		  
-		  // Get the path to the key
-		  // We assume the previous token was an identifier.
-		  Var components() As String = Array(mPreviousToken.Lexeme)
-		  While Match(XKTokenTypes.Dot)
-		    If Match(XKTokenTypes.Identifier) Then
-		      components.Add(mPreviousToken.Lexeme)
-		    Else
-		      Error("Expected an identifier after the dot.")
-		    End If
-		  Wend
-		  
-		  // The key to assign to is the last component of the path.
-		  Var key As String = components.Pop
-		  
-		  // Point to the correct dictionary.
-		  Var pathString As String
-		  For Each component As String In components
-		    pathString = pathString + component + "."
-		    
-		    If mPath.HasKey(component) Then
-		      // Make sure is either a dictionary or undefined.
-		      If mPath.Value(component) IsA Dictionary Then
-		        mPath = mPath.Value(component)
-		      Else
-		        If pathString.Right(1) = "." Then pathString = pathString.Left(pathString.Length - 1)
-		        Error(pathString + " is not a dictionary.")
-		      End If
-		      
-		    Else
-		      // Create a new dictionary.
-		      Var d As New Dictionary
-		      mPath.Value(component) = d
-		      mPath = d
-		    End If
-		  Next component
+		  Var data As Dictionary = SwitchPath(True)
+		  Var pathString As String = data.Value("pathString")
+		  Var key As String = data.Value("key")
 		  
 		  // Are we about to overwrite a value?
 		  If mPath.HasKey(key) Then
@@ -481,15 +449,94 @@ Protected Class XKParser
 		Private Sub StandardDict()
 		  /// Attempts to parse a standard dictionary declaration.
 		  ///
-		  /// If successful the dictionary is created if needed and set to `mCurrentDictionary`.
-		  /// Assumes the previous token was a `[`.
+		  /// If successful the dictionary is created if needed and the path changed to this dictionary.
+		  /// Assumes the previous token was a `[`:
 		  ///
-		  /// standardDict → LSQUARE path RSQUARE
+		  /// ```
+		  /// [some.table]
+		  ///  ^
+		  /// ```
+		  ///
+		  /// standardDict → LSQUARE path RSQUARE (EOL | EOF)
 		  /// path          → IDENTIFIER (DOT IDENTIFIER)*
 		  
-		  #Pragma Warning "TODO"
+		  Consume("Expected an identifier.", XKTokenTypes.Identifier)
+		  Call SwitchPath(False)
+		  Consume("Expected a `]`.", XKTokenTypes.RSquare)
+		  Consume("Expected a line ending or the EOF.", XKTokenTypes.EOL, XKTokenTypes.EOF)
 		  
 		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h21, Description = 5365747320606D506174686020746F2074686520636F72726563742064696374696F6E61727920286372656174696E67206F6E65206966207265717569726564292E
+		Private Function SwitchPath(isKey As Boolean) As Dictionary
+		  /// Sets `mPath` to the correct dictionary (creating one if required). 
+		  /// Returns the path string and optional key.
+		  ///
+		  /// `isKey` is True if we are assigning to a key. It's False if we're switching paths using the `[]` syntax:
+		  /// Returns a`data` dictionary where:
+		  ///   `data[pathString]` is the path as a dot-delimited string (e.g: "some.path").
+		  ///   `data[key]` is the string key to assign to if `isKey` is True.
+		  ///
+		  /// ```
+		  /// some.key = 100 // isKey = True
+		  /// [some.key]     // isKey = False
+		  /// ```
+		  ///
+		  /// Assumes the previous token was an identifier:
+		  ///
+		  /// ```
+		  /// [some.path]
+		  ///      ^
+		  ///
+		  /// some.other.path = "hi"
+		  ///     ^
+		  ///
+		  /// age = 40
+		  ///     ^
+		  /// ```
+		  
+		  // Get the path and optional key.
+		  Var components() As String = Array(mPreviousToken.Lexeme)
+		  While Match(XKTokenTypes.Dot)
+		    If Match(XKTokenTypes.Identifier) Then
+		      components.Add(mPreviousToken.Lexeme)
+		    Else
+		      Error("Expected an identifier after the dot.")
+		    End If
+		  Wend
+		  
+		  // If this is a key assignment, the key is the last component of the path.
+		  Var key As String
+		  If isKey Then key = components.Pop
+		  
+		  // Point to the correct dictionary.
+		  Var pathString As String
+		  For Each component As String In components
+		    pathString = pathString + component + "."
+		    
+		    If mPath.HasKey(component) Then
+		      // Make sure is either a dictionary or undefined.
+		      If mPath.Value(component) IsA Dictionary Then
+		        mPath = mPath.Value(component)
+		      Else
+		        If pathString.Right(1) = "." Then pathString = pathString.Left(pathString.Length - 1)
+		        Error(pathString + " is not a dictionary.")
+		      End If
+		      
+		    Else
+		      // Create a new dictionary.
+		      Var d As New Dictionary
+		      mPath.Value(component) = d
+		      mPath = d
+		    End If
+		  Next component
+		  
+		  pathString = pathString.TrimRight(".")
+		  
+		  Return New Dictionary("pathString":pathString, "key":key)
+		  
+		End Function
 	#tag EndMethod
 
 	#tag Method, Flags = &h21, Description = 546865207061727365722069732070616E69636B696E67206265636175736520697420666F756E6420616E206572726F722E20476574206974206261636B206F6E20747261636B2E
