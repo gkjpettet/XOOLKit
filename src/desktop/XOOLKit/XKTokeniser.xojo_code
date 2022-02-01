@@ -363,7 +363,7 @@ Protected Class XKTokeniser
 		  
 		  // Only add line endings if we're not in an array.
 		  If char = &u0A Then
-		    If mState <> XKTokeniserStates.InArray Then
+		    If mState = XKTokeniserStates.Normal Then
 		      Return MakeToken(XKTokenTypes.EOL)
 		    Else
 		      SkipWhitespace
@@ -396,8 +396,10 @@ Protected Class XKTokeniser
 		  
 		  // Curly brace?
 		  If char = "{" Then
+		    mState = XKTokeniserStates.InInlineDictionary
 		    Return MakeToken(XKTokenTypes.LCurly)
 		  ElseIf char = "}" Then
+		    mState = XKTokeniserStates.Normal
 		    Return MakeToken(XKTokenTypes.RCurly)
 		  End If
 		  
@@ -506,9 +508,9 @@ Protected Class XKTokeniser
 		    End If
 		  End If
 		  
-		  // Need to see whitespace, `]`, a comma or EOF
+		  // Need to see whitespace, `]`, `}`, a comma or EOF
 		  Select Case Peek
-		  Case " ", &u09, &u0A, "]", ",", ""
+		  Case " ", &u09, &u0A, "]", "}", ",", ""
 		    Var lexeme As String = ComputeLexeme(mTokenStart, mCurrent - 1)
 		    If isInteger Then
 		      Return New XKNumberToken(mTokenStart, mLineNumber, Integer.FromString(lexeme), True)
@@ -692,9 +694,9 @@ Protected Class XKTokeniser
 		    Select Case Peek
 		    Case """"
 		      Advance
-		      // Need to see whitespace, `]`, a comma or EOF
+		      // Need to see whitespace, `]`, `}`, a comma or EOF
 		      Select Case Peek
-		      Case " ", &u09, &u0A, "]", ",", ""
+		      Case " ", &u09, &u0A, "]", "}", ",", ""
 		        Return New XOOLKit.XKToken(XKTokenTypes.StringLiteral, mTokenStart, startLine, _
 		        String.FromArray(lexeme, ""))
 		      Else
@@ -937,6 +939,7 @@ Protected Class XKTokeniser
 
 	#tag Enum, Name = XKTokeniserStates, Type = Integer, Flags = &h0
 		InArray
+		  InInlineDictionary
 		Normal
 	#tag EndEnum
 
