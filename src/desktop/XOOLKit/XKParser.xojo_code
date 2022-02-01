@@ -457,8 +457,9 @@ Protected Class XKParser
 		  ///  ^
 		  /// ```
 		  ///
-		  /// standardDict → LSQUARE path RSQUARE (EOL | EOF)
-		  /// path          → IDENTIFIER (DOT IDENTIFIER)*
+		  /// standardDict → LSQUARE path RSQUARE terminator
+		  /// path         → IDENTIFIER (DOT IDENTIFIER)*
+		  /// terminator   → EOL | EOF
 		  
 		  Consume("Expected an identifier.", XKTokenTypes.Identifier)
 		  Call SwitchPath(False)
@@ -512,6 +513,9 @@ Protected Class XKParser
 		  
 		  // Point to the correct dictionary.
 		  Var pathString As String
+		  // If this is a key assignment it's relative to the current `mPath`. Otherwise its absolute.
+		  If Not isKey Then mPath = mRoot
+		  
 		  For Each component As String In components
 		    pathString = pathString + component + "."
 		    
