@@ -28,12 +28,8 @@ Protected Class XKParser
 		  ///  ^
 		  /// ```
 		  ///
-		  /// Every element in the array must be of the same type.
-		  ///
 		  /// array   → LSQUARE (literal (COMMA literal)*)? RSQUARE
-		  /// literal → BOOLEAN | COLOR | NUMBER | STRING
-		  
-		  #Pragma Warning "TODO"
+		  /// literal → BOOLEAN | COLOR | DATETIME | NIL | NUMBER | STRING
 		  
 		  // Empty array?
 		  If Match(XKTokenTypes.RSquare) Then
@@ -41,6 +37,138 @@ Protected Class XKParser
 		    Return result
 		  End If
 		  
+		  // Get all the values and their types as Pairs. Left = variant type, Right = value.
+		  Var values() As Pair
+		  
+		  // Get the first value.
+		  If Match(XKTokenTypes.BooleanLiteral) Then
+		    values.Add(Variant.TypeBoolean : XKBooleanToken(mPreviousToken).Value)
+		    
+		  ElseIf Match(XKTokenTypes.ColorLiteral) Then
+		    values.Add(Variant.TypeColor : XKColorToken(mPreviousToken).MyColor)
+		    
+		  ElseIf Match(XKTokenTypes.DateTime) Then
+		    values.Add(Variant.TypeDateTime : XKDateTimeToken(mPreviousToken).Value)
+		    
+		  ElseIf Match(XKTokenTypes.NilLiteral) Then
+		    values.Add(Variant.TypeObject : Nil)
+		    
+		  ElseIf Match(XKTokenTypes.Number) Then
+		    If XKNumberToken(mPreviousToken).IsInteger Then
+		      values.Add(Variant.TypeInteger : XKNumberToken(mPreviousToken).Value)
+		    Else
+		      values.Add(Variant.TypeDouble : XKNumberToken(mPreviousToken).Value)
+		    End If
+		    
+		  ElseIf Match(XKTokenTypes.StringLiteral) Then
+		    values.Add(Variant.TypeString : mPreviousToken.Lexeme)
+		    
+		  Else
+		    Error("Expected a boolean, color, datetime, number or string value or Nil.")
+		  End If
+		  
+		  While Match(XKTokenTypes.Comma)
+		    If Match(XKTokenTypes.BooleanLiteral) Then
+		      values.Add(Variant.TypeBoolean : XKBooleanToken(mPreviousToken).Value)
+		      
+		    ElseIf Match(XKTokenTypes.ColorLiteral) Then
+		      values.Add(Variant.TypeColor : XKColorToken(mPreviousToken).MyColor)
+		      
+		    ElseIf Match(XKTokenTypes.DateTime) Then
+		      values.Add(Variant.TypeDateTime : XKDateTimeToken(mPreviousToken).Value)
+		      
+		    ElseIf Match(XKTokenTypes.NilLiteral) Then
+		      values.Add(Variant.TypeNil : Nil)
+		      
+		    ElseIf Match(XKTokenTypes.Number) Then
+		      If XKNumberToken(mPreviousToken).IsInteger Then
+		        values.Add(Variant.TypeInteger : XKNumberToken(mPreviousToken).Value)
+		      Else
+		        values.Add(Variant.TypeDouble : XKNumberToken(mPreviousToken).Value)
+		      End If
+		      
+		    ElseIf Match(XKTokenTypes.StringLiteral) Then
+		      values.Add(Variant.TypeString : mPreviousToken.Lexeme)
+		      
+		    Else
+		      Error("Expected a boolean, color, datetime, number or string value or Nil.")
+		    End If
+		  Wend
+		  
+		  // We've collected all the values. Determine the common type.
+		  Var commonType As Integer = values(0).Left
+		  For Each p As Pair In values
+		    If p.Left = Variant.TypeNil Then Continue
+		    
+		    If commonType = Variant.TypeNil Then
+		      commonType = p.Left
+		      Continue
+		    End If
+		    
+		    If commonType <> p.Left Then
+		      commonType = Variant.TypeObject
+		      Exit
+		    End If
+		  Next p
+		  commonType = If(commonType = Variant.TypeNil, Variant.TypeObject, commonType)
+		  
+		  If Not Match(XKTokenTypes.RSquare) Then
+		    Error("Expected `]`.")
+		  End If
+		  
+		  Select Case commonType
+		  Case Variant.TypeBoolean
+		    Var b() As Boolean
+		    For Each p As Pair In values
+		      b.Add(p.Right)
+		    Next p
+		    Return b
+		    
+		  Case Variant.TypeColor
+		    Var c() As Color
+		    For Each p As Pair In values
+		      c.Add(p.Right)
+		    Next p
+		    Return c
+		    
+		  Case Variant.TypeDateTime
+		    Var dt() As DateTime
+		    For Each p As Pair In values
+		      dt.Add(p.Right)
+		    Next p
+		    Return dt
+		    
+		  Case Variant.TypeDouble
+		    Var d() As Double
+		    For Each p As Pair In values
+		      d.Add(p.Right)
+		    Next p
+		    Return d
+		    
+		  Case Variant.TypeInteger
+		    Var i() As Integer
+		    For Each p As Pair In values
+		      i.Add(p.Right)
+		    Next p
+		    Return i
+		    
+		  Case Variant.TypeObject
+		    Var v() As Variant
+		    For Each p As Pair In values
+		      v.Add(p.Right)
+		    Next p
+		    Return v
+		    
+		  Case Variant.TypeString
+		    Var s() As String
+		    For Each p As Pair In values
+		      s.Add(p.Right)
+		    Next p
+		    Return s
+		    
+		  Else
+		    Error("Error determining the common type for array.")
+		  End Select
 		  
 		End Function
 	#tag EndMethod
@@ -98,10 +226,8 @@ Protected Class XKParser
 	#tag EndMethod
 
 	#tag Method, Flags = &h21, Description = 436F6E73756D657320616E642068616E646C657320616E2065787072657373696F6E2E
-		Private Sub Expression(errorMessage As String = "Expected an expression")
+		Private Sub Expression()
 		  /// Consumes and handles an expression.
-		  ///
-		  /// If an error occurs whilst trying to parse an expression, then `errorMessage` is the error that's logged.
 		  ///
 		  /// expression → keyValue | standardDict
 		  
@@ -153,8 +279,6 @@ Protected Class XKParser
 		  /// E.g:
 		  /// `name = "Garry"`
 		  /// `server.ip = "123.123.123.123"`
-		  
-		  #Pragma Warning "TODO"
 		  
 		  // Get the path to the key
 		  // We assume the previous token was an identifier.

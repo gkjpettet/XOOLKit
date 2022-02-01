@@ -186,13 +186,13 @@ End
 
 #tag WindowCode
 	#tag Method, Flags = &h21
-		Private Sub Parse()
+		Private Function Parse() As Dictionary
 		  Tokenise
 		  
 		  mParser = New XOOLKit.XKParser
-		  Var d As Dictionary = mParser.Parse(mTokens)
+		  Return mParser.Parse(mTokens)
 		  
-		End Sub
+		End Function
 	#tag EndMethod
 
 	#tag Method, Flags = &h21
@@ -302,7 +302,8 @@ End
 #tag Events ButtonParse
 	#tag Event
 		Sub Pressed()
-		  Parse
+		  Var d As Dictionary = Parse
+		  
 		End Sub
 	#tag EndEvent
 #tag EndEvents
