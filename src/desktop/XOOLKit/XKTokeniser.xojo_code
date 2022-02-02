@@ -334,17 +334,20 @@ Protected Class XKTokeniser
 		End Function
 	#tag EndMethod
 
-	#tag Method, Flags = &h21, Description = 496620746865206E65787420636861726163746572206973206063686172616374657260207468656E20697420697320636F6E73756D656420616E6420547275652069732072657475726E65642E204F74686572776973652046616C73652069732072657475726E656420616E64206E6F7468696E6720697320636F6E73756D65642E
-		Private Function Match(character As String) As Boolean
-		  /// If the next character is `character` then it is consumed and True is returned. Otherwise False is
+	#tag Method, Flags = &h21, Description = 496620746865206E6578742063686172616374657220697320696E20606368617261637465727360207468656E206974277320636F6E73756D656420616E6420547275652069732072657475726E65642E204F74686572776973652046616C73652069732072657475726E656420616E64206E6F7468696E6720697320636F6E73756D65642E
+		Private Function Match(ParamArray characters() As String) As Boolean
+		  /// If the next character is in `characters` then it's consumed and True is returned. Otherwise False is
 		  /// returned and nothing is consumed.
 		  
-		  If Peek = character Then
-		    Advance
-		    Return True
-		  Else
-		    Return False
-		  End If
+		  For Each character As String In characters
+		    If Peek = character Then
+		      Advance
+		      Return True
+		    End If
+		  Next character
+		  
+		  Return False
+		  
 		  
 		End Function
 	#tag EndMethod
@@ -553,57 +556,77 @@ Protected Class XKTokeniser
 		  ///        ^
 		  /// ```
 		  ///
-		  /// Strings mimic Wren's strings (https://wren.io/values.html)
-		  /// A raw string is flanked by triple quotes (`"""`).
-		  /// Raw strings do not process escapes.
-		  /// When a raw string spans multiple lines and a triple quote is on it’s own line, 
-		  /// any whitespace on that line will be ignored. This means the opening and closing lines are not 
-		  /// counted as part of the string when the triple quotes are separate lines, as long as they only 
-		  /// contain whitespace (spaces + tabs):
+		  /// Raw strings surrounded by three quotation marks on each side and allow newlines. 
+		  /// A newline immediately following the opening delimiter will be trimmed:
 		  ///
 		  /// ```
-		  /// """
-		  ///    Hello world
-		  /// """
+		  /// str1 = """
+		  /// Roses are red
+		  /// Violets are blue"""
 		  /// ```
 		  ///
-		  /// Equates to "   Hello world" (note the leading whitespace is preserved).
+		  /// All other whitespace and newline characters remain intact.
+		  /// To avoid introducing extraneous whitespace, use a "line ending backslash". When the last 
+		  /// non-whitespace character on a line is a `\`, it will be trimmed along with all whitespace (including 
+		  /// newlines) up to the next non-whitespace character or closing delimiter:
+		  /// 
+		  /// ```
+		  /// # The following strings are equivalent:
+		  /// str1 = "The quick brown fox jumps over the lazy dog."
+		  ///
+		  /// str2 = """
+		  /// The quick brown \
+		  ///
+		  ///
+		  ///   fox jumps over \
+		  ///     the lazy dog."""
+		  ///
+		  /// str3 = """\
+		  ///        The quick brown \
+		  ///        fox jumps over \
+		  ///        the lazy dog.\
+		  ///        """
+		  /// ```
 		  
 		  // Edge case: Immediate end of the file.
-		  If Peek = "" Then
-		    SyntaxError("Unterminated raw string literal.")
-		  End If
+		  If Peek = "" Then SyntaxError("Unterminated raw string literal.")
 		  
-		  Var lexemeStart As Integer = mCurrent
+		  // A newline immediately following the opening delimiter will be trimmed.
+		  If Peek = &u0A Then Advance
+		  
 		  Var startLine As Integer = mLineNumber
 		  
-		  // Is there only whitespace to the end of the line after the opening delimiter?
-		  Do Until AtEnd
-		    Var char As String = Peek
-		    If char.IsSpaceOrTab Then
-		      Advance
-		      
-		    ElseIf char = &u0A Then
-		      Advance
-		      lexemeStart = mCurrent
-		      
-		    ElseIf char = "" Then
-		      SyntaxError("Unterminated raw string literal.")
-		      
-		    Else
-		      Exit
-		    End If
-		  Loop
-		  
 		  // Find the closing delimiter.
+		  Var lexeme() As String
 		  While Not AtEnd
-		    If Peek = """" And Peek(2) = """" And Peek(3) = """" Then
+		    If Peek = "\" Then
+		      // If this the last non-whitespace character on this line, skip to the next non-whitespace character.
+		      Var x As Integer = 2
+		      Do
+		        Select Case Peek(x)
+		        Case &u0A
+		          // Keep going until we hit non-whitespace.
+		          Advance(x)
+		          While Match(" ", &u09, &u0A)
+		          Wend
+		          Exit
+		          
+		        Case " ", &u09
+		          x = x + 1
+		          
+		        Else
+		          lexeme.Add(Consume)
+		          Exit
+		        End Select
+		      Loop
+		      
+		    ElseIf Peek = """" And Peek(2) = """" And Peek(3) = """" Then
 		      // Found the closing delimiter.
 		      Advance(3)
-		      Var lexeme As String = ComputeLexeme(lexemeStart, mCurrent - 4)
-		      Return New XOOLKit.XKToken(XKTokenTypes.StringLiteral, mTokenStart, startLine, lexeme)
+		      Return New XOOLKit.XKToken(XKTokenTypes.StringLiteral, mTokenStart, startLine, _
+		      String.FromArray(lexeme, ""))
 		    Else
-		      Advance
+		      lexeme.Add(Consume)
 		    End If
 		  Wend
 		  

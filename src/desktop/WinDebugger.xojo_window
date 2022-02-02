@@ -1,5 +1,5 @@
 #tag DesktopWindow
-Begin DesktopWindow WinTest
+Begin DesktopWindow WinDebugger
    Backdrop        =   0
    BackgroundColor =   &cFFFFFF
    Composite       =   False
@@ -20,7 +20,7 @@ Begin DesktopWindow WinTest
    MinimumHeight   =   64
    MinimumWidth    =   64
    Resizeable      =   True
-   Title           =   "XOOL Dev Harness"
+   Title           =   "XOOL Debugger"
    Type            =   0
    Visible         =   True
    Width           =   1234
@@ -241,7 +241,7 @@ End
 		      lexeme = If(XOOLKit.XKBooleanToken(t).Value, "True", "False")
 		      
 		    Else
-		      lexeme = t.Lexeme
+		      lexeme = StringKit.ReplaceInvisibleCharacters(t.Lexeme)
 		    End Select
 		    
 		    // Populate the lexeme column.

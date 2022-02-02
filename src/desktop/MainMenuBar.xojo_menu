@@ -7,6 +7,17 @@ Begin Menu MainMenuBar
       AutoEnabled = True
       AutoEnable = True
       Visible = True
+      Begin DesktopMenuItem FileRunTests
+         SpecialMenu = 0
+         Index = -2147483648
+         Text = "&Run Tests"
+         ShortcutKey = "R"
+         Shortcut = "Cmd+R"
+         MenuModifier = True
+         AutoEnabled = True
+         AutoEnable = True
+         Visible = True
+      End
       Begin DesktopQuitMenuItem FileQuit
          SpecialMenu = 0
          Index = -2147483648
@@ -109,6 +120,44 @@ Begin Menu MainMenuBar
       SpecialMenu = 0
       Index = -2147483648
       Text = "&Help"
+      AutoEnabled = True
+      AutoEnable = True
+      Visible = True
+   End
+   Begin DesktopMenuItem WindowMenu
+      SpecialMenu = 0
+      Index = -2147483648
+      Text = "Window"
+      AutoEnabled = True
+      AutoEnable = True
+      Visible = True
+      Begin DesktopMenuItem WindowTests
+         SpecialMenu = 0
+         Index = -2147483648
+         Text = "Tests"
+         ShortcutKey = "1"
+         Shortcut = "Cmd+1"
+         MenuModifier = True
+         AutoEnabled = True
+         AutoEnable = True
+         Visible = True
+      End
+      Begin DesktopMenuItem WindowDebugger
+         SpecialMenu = 0
+         Index = -2147483648
+         Text = "Debugger"
+         ShortcutKey = "2"
+         Shortcut = "Cmd+2"
+         MenuModifier = True
+         AutoEnabled = True
+         AutoEnable = True
+         Visible = True
+      End
+   End
+   Begin DesktopMenuItem TestsMenu
+      SpecialMenu = 0
+      Index = -2147483648
+      Text = ""
       AutoEnabled = True
       AutoEnable = True
       Visible = True

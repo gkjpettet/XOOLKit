@@ -83,18 +83,54 @@ Inherits TestGroup
 
 	#tag Method, Flags = &h0
 		Sub Example1Test()
+		  // Empty XOOL document.
+		  
 		  Run(CurrentMethodName)
 		End Sub
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
 		Sub Example2Test()
+		  // Single comment.
+		  
 		  Run(CurrentMethodName)
 		End Sub
 	#tag EndMethod
 
-	#tag Method, Flags = &h0, Description = 52756E7320616E2048544D4C2074657374206E616D6564205B6D6574686F644E616D655D2E
-		Sub Run(methodName As String)
+	#tag Method, Flags = &h0
+		Sub Example3Test()
+		  // Multiple comments.
+		  
+		  Run(CurrentMethodName)
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Sub Example4Test()
+		  // Single top level string key-value.
+		  
+		  Run(CurrentMethodName)
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Sub Example5Test()
+		  // Simple string key-value with an inline comment.
+		  
+		  Run(CurrentMethodName)
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Sub Example6Test()
+		  // A variety of string keys.
+		  
+		  Run(CurrentMethodName)
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h21, Description = 52756E7320616E2048544D4C2074657374206E616D6564205B6D6574686F644E616D655D2E
+		Private Sub Run(methodName As String)
 		  /// Runs a test named [methodName].
 		  
 		  Var testNumber As Integer = _
