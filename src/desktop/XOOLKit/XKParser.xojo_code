@@ -389,7 +389,7 @@ Protected Class XKParser
 		  /// has occurred without causing all subsequent tokens to be mis-interpreted.
 		  
 		  // Add this error to our array of errors.
-		  mErrors.Add(e)
+		  Errors.Add(e)
 		  
 		  // Try to recover.
 		  Synchronise
@@ -437,7 +437,7 @@ Protected Class XKParser
 		  mTokensLastIndex = mTokens.LastIndex
 		  mRoot = New Dictionary
 		  mPath = mRoot
-		  mErrors.RemoveAll
+		  Errors.RemoveAll
 		  mCurrent = 0
 		  mCurrentToken = Nil
 		  mPreviousToken = Nil
@@ -596,10 +596,14 @@ Protected Class XKParser
 	#tag EndMethod
 
 
+	#tag Property, Flags = &h0, Description = 416E79206572726F72732074686174206F6363757272656420647572696E672070617273696E672E
+		Errors() As XOOLKit.XKParserException
+	#tag EndProperty
+
 	#tag ComputedProperty, Flags = &h0, Description = 5472756520696620616E79206572726F7273206F6363757272656420647572696E6720746865206D6F737420726563656E742070617273652E
 		#tag Getter
 			Get
-			  Return mErrors.Count > 0
+			  Return Errors.Count > 0
 			  
 			End Get
 		#tag EndGetter
@@ -612,10 +616,6 @@ Protected Class XKParser
 
 	#tag Property, Flags = &h21, Description = 5468652063757272656E7420746F6B656E20756E646572206576616C756174696F6E2E
 		Private mCurrentToken As XOOLKit.XKToken
-	#tag EndProperty
-
-	#tag Property, Flags = &h21, Description = 416E79206572726F72732074686174206F6363757272656420647572696E672070617273696E672E
-		Private mErrors() As XOOLKit.XKParserException
 	#tag EndProperty
 
 	#tag Property, Flags = &h21, Description = 41207265666572656E636520746F207468652063757272656E742064696374696F6E617279206265696E67206D616E6970756C61746564202874686520227061746822292E

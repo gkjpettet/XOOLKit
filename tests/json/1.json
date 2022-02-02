@@ -1,0 +1,29 @@
+{
+    "database": {
+        "enabled": true,
+        "ports": [
+            8000,
+            8001,
+            8002
+        ],
+        "temp_targets": {
+            "case": 72.0,
+            "cpu": 79.5
+        }
+    },
+    "owner": {
+        "dob": "1879-03-14 00:00:00",
+        "name": "Albert Einstein"
+    },
+    "servers": {
+        "alpha": {
+            "ip": "10.0.0.1",
+            "role": "frontend"
+        },
+        "beta": {
+            "ip": "10.0.0.2",
+            "role": "backend"
+        }
+    },
+    "title": "XOOL Example"
+}
