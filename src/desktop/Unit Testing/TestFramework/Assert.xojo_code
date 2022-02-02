@@ -39,6 +39,9 @@ Protected Class Assert
 		  Group.CurrentTestResult.Input = input
 		  Group.CurrentTestResult.Expected = expectedJSON
 		  Group.CurrentTestResult.Actual = actualJSON
+		  If data <> Nil Then
+		    Group.CurrentTestResult.Message = data.Lookup("errorMessage", "")
+		  End If
 		  
 		  If Group.StopTestOnFail Then
 		    #Pragma BreakOnExceptions False

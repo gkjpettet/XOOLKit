@@ -1,0 +1,15 @@
+# Multiline strings.
+
+s1 = """Hello World"""
+
+s2 = """Line 1
+Line 2"""
+
+s3 = """
+Line 1
+Line 2"""
+
+s4 = """\
+     Hello \
+           World\
+     """

@@ -129,6 +129,14 @@ Inherits TestGroup
 		End Sub
 	#tag EndMethod
 
+	#tag Method, Flags = &h0
+		Sub Example7Test()
+		  // Multiline raw strings.
+		  
+		  Run(CurrentMethodName)
+		End Sub
+	#tag EndMethod
+
 	#tag Method, Flags = &h21, Description = 52756E7320616E2048544D4C2074657374206E616D6564205B6D6574686F644E616D655D2E
 		Private Sub Run(methodName As String)
 		  /// Runs a test named [methodName].
