@@ -366,7 +366,7 @@ Protected Class XKTokeniser
 		  
 		  // Only add line endings if we're not in an array or dictionary.
 		  If char = &u0A Then
-		    If mState = XKTokeniserStates.Normal Then
+		    If mDepth = XKTokeniserDepths.TopLevel Then
 		      Return MakeToken(XKTokenTypes.EOL)
 		    Else
 		      SkipWhitespace
@@ -382,7 +382,7 @@ Protected Class XKTokeniser
 		  If char = "#" Then 
 		    Call CommentToken
 		    If Peek = &u0A Then
-		      If mState = XKTokeniserStates.Normal Then
+		      If mDepth = XKTokeniserDepths.TopLevel Then
 		        Advance
 		        Return MakeToken(XKTokenTypes.EOL)
 		      Else
@@ -406,19 +406,19 @@ Protected Class XKTokeniser
 		  
 		  // Square bracket?
 		  If char = "[" Then
-		    mState = XKTokeniserStates.InArray
+		    mArrayDepth = mArrayDepth + 1
 		    Return MakeToken(XKTokenTypes.LSquare)
 		  ElseIf char = "]" Then
-		    mState = XKTokeniserStates.Normal
+		    mArrayDepth = mArrayDepth - 1
 		    Return MakeToken(XKTokenTypes.RSquare)
 		  End If
 		  
 		  // Curly brace?
 		  If char = "{" Then
-		    mState = XKTokeniserStates.InInlineDictionary
+		    mDictDepth = mDictDepth + 1
 		    Return MakeToken(XKTokenTypes.LCurly)
 		  ElseIf char = "}" Then
-		    mState = XKTokeniserStates.Normal
+		    mDictDepth = mDictDepth - 1
 		    Return MakeToken(XKTokenTypes.RCurly)
 		  End If
 		  
@@ -667,7 +667,8 @@ Protected Class XKTokeniser
 		  mTokenStart = 0
 		  mLineNumber = 1
 		  mPreviousToken = New XKToken(XKTokenTypes.Undefined, 0, 1)
-		  mState = XKTokeniserStates.Normal
+		  mDictDepth = 0
+		  mArrayDepth = 0
 		End Sub
 	#tag EndMethod
 
@@ -952,6 +953,10 @@ Protected Class XKTokeniser
 	#tag EndMethod
 
 
+	#tag Property, Flags = &h21, Description = 486F77206465657020696E746F20616E2061727261792074686520746F6B656E697365722069732E20603060206D65616E73207765277265206E6F7420696E20616E2061727261792E
+		Private mArrayDepth As Integer = 0
+	#tag EndProperty
+
 	#tag Property, Flags = &h21, Description = 5468652063686172616374657273206F662074686520584F4F4C20646F63756D656E74206265696E67207061727365642E
 		Private mCharacters() As String
 	#tag EndProperty
@@ -964,6 +969,23 @@ Protected Class XKTokeniser
 		Private mCurrent As Integer = 0
 	#tag EndProperty
 
+	#tag ComputedProperty, Flags = &h21, Description = 5468652063757272656E74206465707468206F662074686520746F6B656E697365722E20546F702D6C6576656C20696E646963617465732074686520746F6B656E69736572206973206E6F742063757272656E746C79206E657374656420696E20616E206172726179206F722064696374696F6E6172792E
+		#tag Getter
+			Get
+			  If mArrayDepth > 0 Or mDictDepth > 0 Then
+			    Return XKTokeniserDepths.Nested
+			  Else
+			    Return XKTokeniserDepths.TopLevel
+			  End If
+			End Get
+		#tag EndGetter
+		Private mDepth As XOOLKit.XKTokeniser.XKTokeniserDepths
+	#tag EndComputedProperty
+
+	#tag Property, Flags = &h21, Description = 486F77206465657020696E746F20612064696374696F6E6172792074686520746F6B656E697365722069732E20603060206D65616E73207765277265206E6F7420696E20612064696374696F6E6172792E
+		Private mDictDepth As Integer = 0
+	#tag EndProperty
+
 	#tag Property, Flags = &h21, Description = 54686520312D6261736564206C696E65206E756D626572206F662074686520636861726163746572206265696E67206576616C75617465642E
 		Private mLineNumber As Integer = 1
 	#tag EndProperty
@@ -972,19 +994,14 @@ Protected Class XKTokeniser
 		Private mPreviousToken As XOOLKit.XKToken
 	#tag EndProperty
 
-	#tag Property, Flags = &h21, Description = 5468652063757272656E742073746174652074686520746F6B656E6973657220697320696E2E
-		Private mState As XKTokeniserStates = XKTokeniserStates.Normal
-	#tag EndProperty
-
 	#tag Property, Flags = &h21, Description = 302D626173656420696E64657820696E20606D4368617261637465727360206F662074686520666972737420636861726163746572206F662074686520746F6B656E2063757272656E746C79206265696E672070726F6365737365642E
 		Private mTokenStart As Integer = 0
 	#tag EndProperty
 
 
-	#tag Enum, Name = XKTokeniserStates, Type = Integer, Flags = &h0
-		InArray
-		  InInlineDictionary
-		Normal
+	#tag Enum, Name = XKTokeniserDepths, Type = Integer, Flags = &h0
+		Nested
+		TopLevel
 	#tag EndEnum
 
 

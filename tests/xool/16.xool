@@ -1,0 +1,8 @@
+# Nested arrays.
+
+a1 = [1, 2, [3, 4]]
+
+a2 = [
+	{name = "Garry", age = 40}, 
+	{name = "Tony", age = 50}
+]

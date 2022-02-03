@@ -152,6 +152,14 @@ Inherits TestGroup
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
+		Sub Example16Test()
+		  // Nested arrays.
+		  
+		  Run(CurrentMethodName)
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
 		Sub Example1Test()
 		  // Empty XOOL document.
 		  

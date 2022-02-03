@@ -31,6 +31,9 @@ Protected Class XKParser
 		  /// array   → LSQUARE (literal (COMMA literal)*)? RSQUARE
 		  /// literal → BOOLEAN | COLOR | DATETIME | NIL | NUMBER | STRING
 		  
+		  /// value →   literal | array | inlineDict
+		  /// literal → STRING | NUMBER | BOOLEAN | COLOR | DATETIME | NIL
+		  
 		  // Empty array?
 		  If Match(XKTokenTypes.RSquare) Then
 		    Var result() As Variant
@@ -51,7 +54,7 @@ Protected Class XKParser
 		    values.Add(Variant.TypeDateTime : XKDateTimeToken(mPreviousToken).Value)
 		    
 		  ElseIf Match(XKTokenTypes.NilLiteral) Then
-		    values.Add(Variant.TypeObject : Nil)
+		    values.Add(Variant.TypeNil : Nil)
 		    
 		  ElseIf Match(XKTokenTypes.Number) Then
 		    If XKNumberToken(mPreviousToken).IsInteger Then
@@ -63,8 +66,14 @@ Protected Class XKParser
 		  ElseIf Match(XKTokenTypes.StringLiteral) Then
 		    values.Add(Variant.TypeString : mPreviousToken.Lexeme)
 		    
+		  ElseIf Match(XKTokenTypes.LCurly) Then
+		    Values.Add(Variant.TypeObject : InlineDict)
+		    
+		  ElseIf Match(XKTokenTypes.LSquare) Then
+		    Values.Add(Variant.TypeArray : ArrayValue)
+		    
 		  Else
-		    Error("Expected a boolean, color, datetime, number or string value or Nil.")
+		    Error("Expected a value.")
 		  End If
 		  
 		  While Match(XKTokenTypes.Comma)
@@ -90,8 +99,14 @@ Protected Class XKParser
 		    ElseIf Match(XKTokenTypes.StringLiteral) Then
 		      values.Add(Variant.TypeString : mPreviousToken.Lexeme)
 		      
+		    ElseIf Match(XKTokenTypes.LCurly) Then
+		      Values.Add(Variant.TypeObject : InlineDict)
+		      
+		    ElseIf Match(XKTokenTypes.LSquare) Then
+		      Values.Add(Variant.TypeArray : ArrayValue)
+		      
 		    Else
-		      Error("Expected a boolean, color, datetime, number or string value or Nil.")
+		      Error("Expected a value.")
 		    End If
 		  Wend
 		  
