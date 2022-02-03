@@ -1,0 +1,9 @@
+# Simple dictionary
+
+[user]
+name = "Garry"
+age = 40
+languages = ["Xojo", "C#", "Wren"]
+
+education.university.name = "Imperial College"
+education.university.degree = "MBBS"

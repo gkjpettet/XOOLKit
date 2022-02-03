@@ -364,7 +364,7 @@ Protected Class XKTokeniser
 		  
 		  Var char As String = Consume
 		  
-		  // Only add line endings if we're not in an array.
+		  // Only add line endings if we're not in an array or dictionary.
 		  If char = &u0A Then
 		    If mState = XKTokeniserStates.Normal Then
 		      Return MakeToken(XKTokenTypes.EOL)
@@ -382,7 +382,15 @@ Protected Class XKTokeniser
 		  If char = "#" Then 
 		    Call CommentToken
 		    If Peek = &u0A Then
-		      Return MakeToken(XKTokenTypes.EOL)
+		      If mState = XKTokeniserStates.Normal Then
+		        Advance
+		        Return MakeToken(XKTokenTypes.EOL)
+		      Else
+		        SkipWhitespace(True)
+		        mTokenStart = mCurrent
+		        If AtEnd Then Return MakeToken(XKTokenTypes.EOF)
+		        char = Consume
+		      End If
 		    Else
 		      // End of the source code.
 		      Return MakeToken(XKTokenTypes.EOF)
@@ -664,13 +672,18 @@ Protected Class XKTokeniser
 	#tag EndMethod
 
 	#tag Method, Flags = &h21, Description = 536B697073206F76657220776869746573706163652C206578636C7564696E67206C696E6520656E64696E67732E
-		Private Sub SkipWhitespace()
-		  /// Skips over whitespace, excluding line endings.
+		Private Sub SkipWhitespace(lineEndingIsWhitespace As Boolean = False)
+		  /// Skips over whitespace.
 		  
 		  Do
 		    Select Case Peek
 		    Case &u0A
-		      Return
+		      If lineEndingIsWhitespace Then
+		        Advance
+		        Continue
+		      Else
+		        Return
+		      End If
 		      
 		    Case " ", &u0009
 		      Advance

@@ -1,0 +1,13 @@
+{
+	"user": {
+		"name": "Garry",
+		"age": 40,
+		"languages": ["Xojo", "C#", "Wren"], 
+		"education": {
+			"university": {
+				"name": "Imperial College", 
+				"degree": "MBBS"
+			}
+		}
+	}
+}

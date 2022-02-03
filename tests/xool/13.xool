@@ -1,0 +1,39 @@
+####################
+# SINGLE LINE ARRAYS
+####################
+a1 = [1, 2, 3]
+a2 = ["a", "b", "c"]
+a3 = [true, false]
+a4 = [1.5, 2.5, 2.5]
+a5 = ["single"]
+a6 = [10, nil] # Still an integer array.
+
+# Variant arrays.
+a7 = []
+a8 = [nil]
+a9 = [1, "a", true]
+
+####################
+# MULTILINE ARRAYS
+####################
+m1 = [
+]
+
+m2 = [
+		1, 2, 
+		3, 4
+	 ]
+
+m3 = ["a", 
+"b"]
+
+####################
+# COMMENTS
+####################
+c1 = [#This is empty
+]
+
+c2 = [
+"Garry", # The user's name
+40 # The user's age
+]
