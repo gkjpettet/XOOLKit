@@ -150,11 +150,11 @@ Begin DesktopWindow WinDebugger
       _ScrollOffset   =   0
       _ScrollWidth    =   -1
    End
-   Begin DesktopButton ButtonParse
+   Begin DesktopButton ButtonDictToXOOL
       AllowAutoDeactivate=   True
       Bold            =   False
       Cancel          =   False
-      Caption         =   "Parse"
+      Caption         =   "Test Dict To XOOL"
       Default         =   False
       Enabled         =   True
       FontName        =   "System"
@@ -171,37 +171,6 @@ Begin DesktopWindow WinDebugger
       LockTop         =   False
       MacButtonStyle  =   0
       Scope           =   2
-      TabIndex        =   3
-      TabPanelIndex   =   0
-      TabStop         =   True
-      Tooltip         =   ""
-      Top             =   670
-      Transparent     =   False
-      Underline       =   False
-      Visible         =   True
-      Width           =   80
-   End
-   Begin DesktopButton ButtonToJSON
-      AllowAutoDeactivate=   True
-      Bold            =   False
-      Cancel          =   False
-      Caption         =   "To JSON"
-      Default         =   False
-      Enabled         =   True
-      FontName        =   "System"
-      FontSize        =   0.0
-      FontUnit        =   0
-      Height          =   20
-      Index           =   -2147483648
-      Italic          =   False
-      Left            =   204
-      LockBottom      =   True
-      LockedInPosition=   False
-      LockLeft        =   True
-      LockRight       =   False
-      LockTop         =   False
-      MacButtonStyle  =   0
-      Scope           =   2
       TabIndex        =   4
       TabPanelIndex   =   0
       TabStop         =   True
@@ -210,7 +179,7 @@ Begin DesktopWindow WinDebugger
       Transparent     =   False
       Underline       =   False
       Visible         =   True
-      Width           =   97
+      Width           =   155
    End
 End
 #tag EndDesktopWindow
@@ -330,19 +299,20 @@ End
 		End Sub
 	#tag EndEvent
 #tag EndEvents
-#tag Events ButtonParse
+#tag Events ButtonDictToXOOL
 	#tag Event
 		Sub Pressed()
-		  Var d As Dictionary = Parse
+		  #Pragma Warning "TODO"
+		  
+		  Var d As New Dictionary( _
+		  "name" : "Garry", _
+		  "age" : 40, _
+		  "male": True _
+		  )
+		  
+		  Var xool As String = GenerateXOOL(d)
 		  
 		  Break
-		End Sub
-	#tag EndEvent
-#tag EndEvents
-#tag Events ButtonToJSON
-	#tag Event
-		Sub Pressed()
-		  Call XOOLKit.ToJSON(Input.Text, True)
 		End Sub
 	#tag EndEvent
 #tag EndEvents

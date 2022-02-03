@@ -112,7 +112,7 @@ Inherits TestGroup
 		  // c3 = &cABCDEF12
 		  // ```
 		  
-		  Var d As Dictionary = XOOLKit.Parse(EXAMPLE_12)
+		  Var d As Dictionary = ParseXOOL(EXAMPLE_12)
 		  
 		  Var c1 As Color = Color.FromString("&h00112233")
 		  Var c2 As Color = Color.FromString("&h00ABCDEF")

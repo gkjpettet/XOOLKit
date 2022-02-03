@@ -2,13 +2,19 @@
 Protected Class XKException
 Inherits RuntimeException
 	#tag Method, Flags = &h0
-		Sub Constructor(tokeniserErrors() As XOOLKit.XKTokeniserException, parserErrors() As XOOLKit.XKParserException, message As String = "")
+		Sub Constructor(message As String)
+		  Super.Constructor(message)
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Sub Constructor(tokeniserErrors() As XOOLKit.XKTokeniserException, parserErrors() As XOOLKit.XKParserException)
 		  // Calling the overridden superclass constructor.
 		  Super.Constructor
 		  
 		  Self.TokeniserErrors = tokeniserErrors
 		  Self.ParserErrors = parserErrors
-		  Self.Message = message
+		  
 		End Sub
 	#tag EndMethod
 

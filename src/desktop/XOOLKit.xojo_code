@@ -1,7 +1,74 @@
 #tag Module
 Protected Module XOOLKit
-	#tag Method, Flags = &h1, Description = 506172736573206120584F4F4C20646F63756D656E7420286073602920696E746F20612064696374696F6E61727920616E642072657475726E732069742E2052616973657320616E2060584B457863657074696F6E6020696620616E79206572726F7273206F636375722E
-		Protected Function Parse(s As String) As Dictionary
+	#tag Method, Flags = &h0, Description = 436F6E766572747320612064696374696F6E61727920746F206120584F4F4C20646F63756D656E742E204D617920726169736520616E2060584B457863657074696F6E602E
+		Function GenerateXOOL(d As Dictionary) As String
+		  /// Converts a dictionary to a XOOL document. May raise an `XKException`.
+		  
+		  If d.KeyCount = 0 Then Return ""
+		  
+		  Var s() As String
+		  
+		  For Each entry As DictionaryEntry In d
+		    // Only string keys are supported.
+		    If entry.Key.Type <> variant.TypeString Then
+		      Raise New XOOLKit.XKException("Dictionary keys must be strings.")
+		    End If
+		    
+		    Var keyValue As String = entry.Key + " = "
+		    
+		    If entry.Value IsA Dictionary Then
+		      #Pragma Warning "TODO: Handle dictionary values"
+		      
+		    ElseIf entry.Value Isa XOOLKit.XKSerializable Then
+		      #Pragma Warning "TODO: Handle serializable objects"
+		      
+		    Else
+		      Select Case entry.Value.Type
+		      Case Variant.TypeArray
+		        #Pragma Warning "TODO: Handle array values"
+		        
+		      Case Variant.TypeBoolean
+		        keyValue = keyValue + If(entry.Value, "True", "False")
+		        
+		      Case Variant.TypeColor
+		        #Pragma Warning "TODO"
+		        
+		      Case Variant.TypeDateTime
+		        #Pragma Warning "TODO"
+		        
+		      Case Variant.TypeDouble
+		        keyValue = keyValue + entry.Value.DoubleValue.ToString
+		        
+		      Case Variant.TypeInt32
+		        keyValue = keyValue + entry.Value.Int32Value.ToString
+		        
+		      Case Variant.TypeInt64
+		        keyValue = keyValue + entry.Value.Int64Value.ToString
+		        
+		      Case Variant.TypeInteger
+		        keyValue = keyValue + entry.Value.IntegerValue.ToString
+		        
+		      Case Variant.TypeNil
+		        keyValue = keyValue + "Nil"
+		        
+		      Case Variant.TypeString, Variant.TypeText
+		        #Pragma Warning "TODO: Handle string/text values"
+		        
+		      Else
+		        Raise New XOOLKit.XKException("Unable to serialise the value of the key `" + entry.Key + "`.")
+		      End Select
+		    End If
+		    
+		    s.Add(keyValue)
+		  Next entry
+		  
+		  Return String.FromArray(s, &u0A)
+		  
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0, Description = 506172736573206120584F4F4C20646F63756D656E7420286073602920696E746F20612064696374696F6E61727920616E642072657475726E732069742E2052616973657320616E2060584B457863657074696F6E6020696620616E79206572726F7273206F636375722E
+		Function ParseXOOL(s As String) As Dictionary
 		  /// Parses a XOOL document (`s`) into a dictionary and returns it. 
 		  /// Raises an `XKException` if any errors occur.
 		  
@@ -36,12 +103,10 @@ Protected Module XOOLKit
 		Protected Function ToJSON(s As String, expanded As Boolean = False) As String
 		  /// Converts the contents of a XOOL document (`s`) to JSON. Raises an `XKException` if any errors occur.
 		  
-		  Return GenerateJSON(Parse(s), expanded)
+		  Return GenerateJSON(ParseXOOL(s), expanded)
 		  
 		  Exception e As JSONException
-		    Var tErrors() As XOOLKit.XKTokeniserException
-		    Var pErrors() As XOOLKit.XKParserException
-		    Raise New XOOLKit.XKException(tErrors, pErrors, e.Message)
+		    Raise New XOOLKit.XKException(e.Message)
 		End Function
 	#tag EndMethod
 
