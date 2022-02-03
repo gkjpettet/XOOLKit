@@ -20,6 +20,38 @@ Protected Class XKTokeniser
 	#tag EndMethod
 
 	#tag Method, Flags = &h21, Description = 417474656D70747320746F20616464206120636F6C6F7220746F6B656E2E2052616973657320616E2060584B457863657074696F6E6020696620756E7375636365737366756C2E
+		Private Function BinaryToken() As XOOLKit.XKNumberToken
+		  /// Attempts to add a binary number token. Raises an `XKException` if unsuccessful.
+		  ///
+		  /// Assumes we have just consumed a `&`:
+		  /// ```
+		  /// num = &b1001
+		  ///        ^
+		  /// ```
+		  
+		  If Not Match("b") Then SyntaxError("Expected `b` at start of binary literal.")
+		  
+		  // Need to see at least one binary digit.
+		  If Not Consume.IsBinaryDigit Then SyntaxError("Expected a binary digit.")
+		  
+		  // Get the remaining binary digits (if any).
+		  While Peek.IsBinaryDigit
+		    Advance
+		  Wend
+		  
+		  // Need to see whitespace, `]`, `}`, a comma or EOF
+		  Select Case Peek
+		  Case " ", &u09, &u0A, "]", "}", ",", ""
+		    // +2 to account for the `&b` prefix.
+		    Var lexeme As String = ComputeLexeme(mTokenStart + 2, mCurrent - 1)
+		    Return New XKNumberToken(mTokenStart, mLineNumber, Integer.FromBinary(lexeme), False)
+		  Else
+		    SyntaxError("Expected whitespace, `]`, `}`, `.` or EOF after binary number literal.")
+		  End Select
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h21, Description = 417474656D70747320746F20616464206120636F6C6F7220746F6B656E2E2052616973657320616E2060584B457863657074696F6E6020696620756E7375636365737366756C2E
 		Private Function ColorToken() As XOOLKit.XKToken
 		  /// Attempts to add a color token. Raises an `XKException` if unsuccessful.
 		  ///
@@ -462,6 +494,10 @@ Protected Class XKTokeniser
 		      Return ColorToken
 		    ElseIf Peek = "h" Then
 		      Return HexToken
+		    ElseIf Peek = "o" Then
+		      Return OctalToken
+		    ElseIf Peek = "b" Then
+		      Return BinaryToken
 		    End If
 		  End If
 		  
@@ -580,6 +616,38 @@ Protected Class XKTokeniser
 		    Return Nil
 		  End Select
 		  
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h21, Description = 417474656D70747320746F20616464206120636F6C6F7220746F6B656E2E2052616973657320616E2060584B457863657074696F6E6020696620756E7375636365737366756C2E
+		Private Function OctalToken() As XOOLKit.XKNumberToken
+		  /// Attempts to add an octal number token. Raises an `XKException` if unsuccessful.
+		  ///
+		  /// Assumes we have just consumed a `&`:
+		  /// ```
+		  /// num = &o12
+		  ///        ^
+		  /// ```
+		  
+		  If Not Match("o") Then SyntaxError("Expected `o` at start of octal literal.")
+		  
+		  // Need to see at least one octal digit.
+		  If Not Consume.IsOctalDigit Then SyntaxError("Expected an octal digit.")
+		  
+		  // Get the remaining octal digits (if any).
+		  While Peek.IsOctalDigit
+		    Advance
+		  Wend
+		  
+		  // Need to see whitespace, `]`, `}`, a comma or EOF
+		  Select Case Peek
+		  Case " ", &u09, &u0A, "]", "}", ",", ""
+		    // +2 to account for the `&o` prefix.
+		    Var lexeme As String = ComputeLexeme(mTokenStart + 2, mCurrent - 1)
+		    Return New XKNumberToken(mTokenStart, mLineNumber, Integer.FromOctal(lexeme), False)
+		  Else
+		    SyntaxError("Expected whitespace, `]`, `}`, `.` or EOF after octal number literal.")
+		  End Select
 		End Function
 	#tag EndMethod
 
