@@ -1,0 +1,9 @@
+# Multiline standard strings.
+
+s1 = "Hi
+there,
+again"
+
+s2 = "Tab\t
+rocket: \U0001F680
+quote: \""

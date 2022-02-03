@@ -82,6 +82,50 @@ Inherits TestGroup
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
+		Sub Example10Test()
+		  // Multiline standard strings.
+		  
+		  Run(CurrentMethodName)
+		  
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Sub Example11Test()
+		  // Top-level basic key-values.
+		  
+		  Run(CurrentMethodName)
+		  
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Sub Example12Test()
+		  // Color testing.
+		  //
+		  // Example 12:
+		  // ```
+		  // # Color testing.
+		  //
+		  // c1 = &c123
+		  // c2 = &cABCDEF
+		  // c3 = &cABCDEF12
+		  // ```
+		  
+		  Var d As Dictionary = XOOLKit.Parse(EXAMPLE_12)
+		  
+		  Var c1 As Color = Color.FromString("&h00112233")
+		  Var c2 As Color = Color.FromString("&h00ABCDEF")
+		  Var c3 As Color = Color.FromString("&h12ABCDEF")
+		  
+		  Assert.AreEqual(d.Value("c1"), c1, "c1")
+		  Assert.AreEqual(d.Value("c2"), c2, "c2")
+		  Assert.AreEqual(d.Value("c3"), c3, "c3")
+		  
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
 		Sub Example1Test()
 		  // Empty XOOL document.
 		  
@@ -218,6 +262,10 @@ Inherits TestGroup
 		    Assert.FailCustom(xool, expectedJSON, actualJSON, data)
 		End Sub
 	#tag EndMethod
+
+
+	#tag Constant, Name = EXAMPLE_12, Type = String, Dynamic = False, Default = \"# Color testing.\n\nc1 \x3D &c123\nc2 \x3D &cABCDEF\nc3 \x3D &cABCDEF12", Scope = Private
+	#tag EndConstant
 
 
 	#tag ViewBehavior

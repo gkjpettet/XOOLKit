@@ -1,6 +1,20 @@
 #tag Class
 Protected Class Assert
 	#tag Method, Flags = &h0
+		Sub AreEqual(expected As Color, actual As Color, message As String = "")
+		  Var expectedColor, actualColor As String
+		  
+		  If expected = actual Then
+		    Pass()
+		  Else
+		    expectedColor = "RGB(" + expected.Red.ToString + ", " + expected.Green.ToString + ", " + expected.Blue.ToString + ")"
+		    actualColor = "RGB(" + actual.Red.ToString + ", " + actual.Green.ToString + ", " + actual.Blue.ToString + ")"
+		    Fail(FailEqualMessage(expectedColor, actualColor), message)
+		  End If
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
 		Sub Destructor()
 		  Group = Nil
 		End Sub
@@ -50,6 +64,16 @@ Protected Class Assert
 		  End If
 		  
 		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h21
+		Private Function FailEqualMessage(expected As String, actual As String) As String
+		  Var message As String
+		  
+		  message = "Expected [" + expected + "] but was [" + actual + "]."
+		  
+		  Return message
+		End Function
 	#tag EndMethod
 
 	#tag Method, Flags = &h0

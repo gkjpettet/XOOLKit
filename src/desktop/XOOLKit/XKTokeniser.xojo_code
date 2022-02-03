@@ -504,7 +504,7 @@ Protected Class XKTokeniser
 		    isInteger = False
 		    Advance
 		    // Consume the optional sign character.
-		    If Peek(2).IsExactly("-", "+") Then Advance
+		    If Peek.IsExactly("-", "+") Then Advance
 		    
 		    // Must see at least one digit.
 		    If Not Peek.IsDigit Then

@@ -1,0 +1,5 @@
+# Color testing.
+
+c1 = &c123
+c2 = &cABCDEF
+c3 = &cABCDEF12
