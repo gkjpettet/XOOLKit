@@ -44,7 +44,7 @@ Protected Class XKTokeniser
 		  Case " ", &u09, &u0A, "]", "}", ",", ""
 		    // +2 to account for the `&b` prefix.
 		    Var lexeme As String = ComputeLexeme(mTokenStart + 2, mCurrent - 1)
-		    Return New XKNumberToken(mTokenStart, mLineNumber, Integer.FromBinary(lexeme), False)
+		    Return New XKNumberToken(mTokenStart, mLineNumber, Integer.FromBinary(lexeme), True)
 		  Else
 		    SyntaxError("Expected whitespace, `]`, `}`, `.` or EOF after binary number literal.")
 		  End Select
@@ -329,7 +329,7 @@ Protected Class XKTokeniser
 		  Case " ", &u09, &u0A, "]", "}", ",", ""
 		    // +2 to account for the `&h` prefix.
 		    Var lexeme As String = ComputeLexeme(mTokenStart + 2, mCurrent - 1)
-		    Return New XKNumberToken(mTokenStart, mLineNumber, Integer.FromHex(lexeme), False)
+		    Return New XKNumberToken(mTokenStart, mLineNumber, Integer.FromHex(lexeme), True)
 		  Else
 		    SyntaxError("Expected whitespace, `]`, `}`, `.` or EOF after hex number literal.")
 		  End Select
@@ -644,7 +644,7 @@ Protected Class XKTokeniser
 		  Case " ", &u09, &u0A, "]", "}", ",", ""
 		    // +2 to account for the `&o` prefix.
 		    Var lexeme As String = ComputeLexeme(mTokenStart + 2, mCurrent - 1)
-		    Return New XKNumberToken(mTokenStart, mLineNumber, Integer.FromOctal(lexeme), False)
+		    Return New XKNumberToken(mTokenStart, mLineNumber, Integer.FromOctal(lexeme), True)
 		  Else
 		    SyntaxError("Expected whitespace, `]`, `}`, `.` or EOF after octal number literal.")
 		  End Select
