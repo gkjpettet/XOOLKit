@@ -379,7 +379,15 @@ Protected Class XKTokeniser
 		  // ===========================
 		  // COMMENT
 		  // ===========================
-		  If char = "#" Then Return CommentToken
+		  If char = "#" Then 
+		    Call CommentToken
+		    If Peek = &u0A Then
+		      Return MakeToken(XKTokenTypes.EOL)
+		    Else
+		      // End of the source code.
+		      Return MakeToken(XKTokenTypes.EOF)
+		    End If
+		  End If
 		  
 		  // ===========================
 		  // SINGLE CHARACTER SYMBOLS

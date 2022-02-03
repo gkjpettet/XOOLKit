@@ -27,9 +27,9 @@ Begin DesktopWindow WinDebugger
    Begin DesktopTextArea Input
       AllowAutoDeactivate=   True
       AllowFocusRing  =   True
-      AllowSpellChecking=   True
+      AllowSpellChecking=   False
       AllowStyledText =   True
-      AllowTabs       =   False
+      AllowTabs       =   True
       BackgroundColor =   &cFFFFFF
       Bold            =   False
       Enabled         =   True
