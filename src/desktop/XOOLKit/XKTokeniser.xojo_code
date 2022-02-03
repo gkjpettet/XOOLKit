@@ -272,6 +272,38 @@ Protected Class XKTokeniser
 		End Function
 	#tag EndMethod
 
+	#tag Method, Flags = &h21, Description = 417474656D70747320746F20616464206120636F6C6F7220746F6B656E2E2052616973657320616E2060584B457863657074696F6E6020696620756E7375636365737366756C2E
+		Private Function HexToken() As XOOLKit.XKNumberToken
+		  /// Attempts to add a hex number token. Raises an `XKException` if unsuccessful.
+		  ///
+		  /// Assumes we have just consumed a `&`:
+		  /// ```
+		  /// c = &hFF
+		  ///      ^
+		  /// ```
+		  
+		  If Not Match("h") Then SyntaxError("Expected `h` at start of hex literal.")
+		  
+		  // Need to see at least one hex digit.
+		  If Not Consume.IsHexDigit Then SyntaxError("Expected a hexadecimal digit.")
+		  
+		  // Get the remaining hex digits (if any).
+		  While Peek.IsHexDigit
+		    Advance
+		  Wend
+		  
+		  // Need to see whitespace, `]`, `}`, a comma or EOF
+		  Select Case Peek
+		  Case " ", &u09, &u0A, "]", "}", ",", ""
+		    // +2 to account for the `&h` prefix.
+		    Var lexeme As String = ComputeLexeme(mTokenStart + 2, mCurrent - 1)
+		    Return New XKNumberToken(mTokenStart, mLineNumber, Integer.FromHex(lexeme), False)
+		  Else
+		    SyntaxError("Expected whitespace, `]`, `}`, `.` or EOF after hex number literal.")
+		  End Select
+		End Function
+	#tag EndMethod
+
 	#tag Method, Flags = &h21, Description = 417474656D70747320746F2061646420616E206964656E746966657220626F6F6C65616E206F72204E696C20746F6B656E2E2052616973657320616E2060584B457863657074696F6E6020696620756E7375636365737366756C2E
 		Private Function IdentifierBooleanOrNilToken() As XKToken
 		  /// Attempts to add an identifer boolean or Nil token. Raises an `XKException` if unsuccessful.
@@ -425,7 +457,13 @@ Protected Class XKTokeniser
 		  // ===========================
 		  // COLOR LITERALS
 		  // ===========================
-		  If char = "&" Then Return ColorToken
+		  If char = "&" Then
+		    If Peek = "c" Then
+		      Return ColorToken
+		    ElseIf Peek = "h" Then
+		      Return HexToken
+		    End If
+		  End If
 		  
 		  // ===========================
 		  // NUMBERS & DATES
