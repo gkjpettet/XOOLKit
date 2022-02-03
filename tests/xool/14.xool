@@ -5,5 +5,17 @@ name = "Garry"
 age = 40
 languages = ["Xojo", "C#", "Wren"]
 
+# Create `education` and `university` dictionaries within `user` and assign to them.
 education.university.name = "Imperial College"
 education.university.degree = "MBBS"
+
+education.school.name = "John Hampden"
+
+# Switch back to the base path to add a key to the root.
+[]
+rootKey = "test"
+
+# Actually I want to add some details about my school.
+[user.education.school]
+year = 1999
+town = "High Wycombe"

@@ -173,6 +173,68 @@ Protected Class XKParser
 		End Function
 	#tag EndMethod
 
+	#tag Method, Flags = &h21, Description = 44657465726D696E65732074686520636F72726563742064696374696F6E61727920746F2061737369676E20746F20286372656174696E67206F6E65206966207265717569726564292E2052657475726E73207468652064696374696F6E61727920746F2061737369676E20746F2C20746865207061746820737472696E6720616E64206B65792E
+		Private Function AssignmentPath() As Dictionary
+		  /// Determines the correct dictionary to assign to (creating one if required). 
+		  /// Returns the dictionary to assign to, the path string and key.
+		  ///
+		  /// Returns a`data` dictionary where:
+		  ///   `data[assignmentPath]` is the dictionary to assign to.
+		  ///   `data[pathString]` is the path as a dot-delimited string (e.g: "some.path").
+		  ///   `data[key]` is the string key to assign to.
+		  ///
+		  /// Assumes the previous token was an identifier:
+		  ///
+		  /// ```
+		  /// some.other.path = "hi"
+		  ///     ^
+		  ///
+		  /// age = 40
+		  ///     ^
+		  /// ```
+		  
+		  // Get the path and key.
+		  Var components() As String = Array(mPreviousToken.Lexeme)
+		  While Match(XKTokenTypes.Dot)
+		    If Match(XKTokenTypes.Identifier) Then
+		      components.Add(mPreviousToken.Lexeme)
+		    Else
+		      Error("Expected an identifier after the dot.")
+		    End If
+		  Wend
+		  
+		  // The key is the last component of the path.
+		  Var key As String = components.Pop
+		  
+		  // The assignment is relative to the current base path.
+		  Var assignmentPath As Dictionary = mBasePath
+		  
+		  Var pathString As String
+		  For Each component As String In components
+		    pathString = pathString + component + "."
+		    
+		    If assignmentPath.HasKey(component) Then
+		      // Make sure is either a dictionary or undefined.
+		      If assignmentPath.Value(component) IsA Dictionary Then
+		        assignmentPath = assignmentPath.Value(component)
+		      Else
+		        pathString = pathString.TrimRight(".")
+		        Error(pathString + " is not a dictionary.")
+		      End If
+		      
+		    Else
+		      // Create a new dictionary.
+		      Var d As New Dictionary
+		      assignmentPath.Value(component) = d
+		      assignmentPath = d
+		    End If
+		  Next component
+		  
+		  Return New Dictionary("assignmentPath" : assignmentPath, "pathString" : pathString, "key" : key)
+		  
+		End Function
+	#tag EndMethod
+
 	#tag Method, Flags = &h21, Description = 5472756520696620776527766520726561636865642074686520656E64206F662074686520746F6B656E2073747265616D2E
 		Private Function AtEnd() As Boolean
 		  /// True if we've reached the end of the token stream.
@@ -273,13 +335,19 @@ Protected Class XKParser
 		Private Sub Expression()
 		  /// Consumes and handles an expression.
 		  ///
-		  /// expression → keyValue | standardDict
+		  /// expression → keyValue | setBasePath
 		  
 		  If Match(XKTokenTypes.Identifier) Then
 		    KeyValue
 		    
 		  ElseIf Match(XKTokenTypes.LSquare) Then
-		    StandardDict
+		    If Match(XKTokenTypes.RSquare) Then
+		      // Edge case: Switch the base path to root.
+		      Consume("Expected a line ending or the EOF.", XKTokenTypes.EOL, XKTokenTypes.EOF)
+		      mBasePath = mRoot
+		    Else
+		      SetBasePath
+		    End If
 		    
 		  Else
 		    Error("Unexpected token. Expected a key-value, inline dictionary or standard dictionary.")
@@ -334,7 +402,7 @@ Protected Class XKParser
 		Private Sub KeyValue()
 		  /// Attempts to parse a key-value pair.
 		  ///
-		  /// If successful, the key-value is added to the current dictionary.
+		  /// If successful, the key-value is added relative to the current base path.
 		  /// Assumes the previous token was an identifier.
 		  ///
 		  /// keyValue   → key EQUAL value terminator
@@ -346,12 +414,13 @@ Protected Class XKParser
 		  /// `name = "Garry"`
 		  /// `server.ip = "123.123.123.123"`
 		  
-		  Var data As Dictionary = SwitchPath(True)
+		  Var data As Dictionary = AssignmentPath
 		  Var pathString As String = data.Value("pathString")
+		  Var assignmentPath As Dictionary = data.Value("assignmentPath")
 		  Var key As String = data.Value("key")
 		  
 		  // Are we about to overwrite a value?
-		  If mPath.HasKey(key) Then
+		  If assignmentPath.HasKey(key) Then
 		    Error("Cannot re-assign a value to `" + pathString + key + "`.")
 		  End If
 		  
@@ -359,7 +428,7 @@ Protected Class XKParser
 		  Consume("Expected an `=` after the key.", XKTokenTypes.Equal)
 		  
 		  // Assign the value.
-		  mPath.Value(key) = Value
+		  assignmentPath.Value(key) = Value
 		  
 		  Consume("Expected EOL or EOF after the key's value.", XKTokenTypes.EOL, XKTokenTypes.EOF)
 		End Sub
@@ -436,7 +505,7 @@ Protected Class XKParser
 		  mTokens = tokens
 		  mTokensLastIndex = mTokens.LastIndex
 		  mRoot = New Dictionary
-		  mPath = mRoot
+		  mBasePath = mRoot
 		  Errors.RemoveAll
 		  mCurrent = 0
 		  mCurrentToken = Nil
@@ -445,59 +514,25 @@ Protected Class XKParser
 		End Sub
 	#tag EndMethod
 
-	#tag Method, Flags = &h21
-		Private Sub StandardDict()
-		  /// Attempts to parse a standard dictionary declaration.
+	#tag Method, Flags = &h21, Description = 53657473207468652063757272656E74206261736520706174682E
+		Private Sub SetBasePath()
+		  /// Sets the current base path.
 		  ///
-		  /// If successful the dictionary is created if needed and the path changed to this dictionary.
+		  /// If successful the dictionary is created if needed and the base path changed to this dictionary.
 		  /// Assumes the previous token was a `[`:
 		  ///
 		  /// ```
-		  /// [some.table]
+		  /// [some.path]
 		  ///  ^
 		  /// ```
 		  ///
-		  /// standardDict → LSQUARE path RSQUARE terminator
+		  /// setBasePath  → LSQUARE path RSQUARE terminator
 		  /// path         → IDENTIFIER (DOT IDENTIFIER)*
 		  /// terminator   → EOL | EOF
 		  
 		  Consume("Expected an identifier.", XKTokenTypes.Identifier)
-		  Call SwitchPath(False)
-		  Consume("Expected a `]`.", XKTokenTypes.RSquare)
-		  Consume("Expected a line ending or the EOF.", XKTokenTypes.EOL, XKTokenTypes.EOF)
 		  
-		End Sub
-	#tag EndMethod
-
-	#tag Method, Flags = &h21, Description = 5365747320606D506174686020746F2074686520636F72726563742064696374696F6E61727920286372656174696E67206F6E65206966207265717569726564292E
-		Private Function SwitchPath(isKey As Boolean) As Dictionary
-		  /// Sets `mPath` to the correct dictionary (creating one if required). 
-		  /// Returns the path string and optional key.
-		  ///
-		  /// `isKey` is True if we are assigning to a key. It's False if we're switching paths using the `[]` syntax:
-		  /// Returns a`data` dictionary where:
-		  ///   `data[pathString]` is the path as a dot-delimited string (e.g: "some.path").
-		  ///   `data[key]` is the string key to assign to if `isKey` is True.
-		  ///
-		  /// ```
-		  /// some.key = 100 // isKey = True
-		  /// [some.key]     // isKey = False
-		  /// ```
-		  ///
-		  /// Assumes the previous token was an identifier:
-		  ///
-		  /// ```
-		  /// [some.path]
-		  ///      ^
-		  ///
-		  /// some.other.path = "hi"
-		  ///     ^
-		  ///
-		  /// age = 40
-		  ///     ^
-		  /// ```
-		  
-		  // Get the path and optional key.
+		  // Get the path.
 		  Var components() As String = Array(mPreviousToken.Lexeme)
 		  While Match(XKTokenTypes.Dot)
 		    If Match(XKTokenTypes.Identifier) Then
@@ -507,40 +542,33 @@ Protected Class XKParser
 		    End If
 		  Wend
 		  
-		  // If this is a key assignment, the key is the last component of the path.
-		  Var key As String
-		  If isKey Then key = components.Pop
-		  
 		  // Point to the correct dictionary.
+		  mBasePath = mRoot
 		  Var pathString As String
-		  // If this is a key assignment it's relative to the current `mPath`. Otherwise its absolute.
-		  If Not isKey Then mPath = mRoot
-		  
 		  For Each component As String In components
 		    pathString = pathString + component + "."
 		    
-		    If mPath.HasKey(component) Then
+		    If mBasePath.HasKey(component) Then
 		      // Make sure is either a dictionary or undefined.
-		      If mPath.Value(component) IsA Dictionary Then
-		        mPath = mPath.Value(component)
+		      If mBasePath.Value(component) IsA Dictionary Then
+		        mBasePath = mBasePath.Value(component)
 		      Else
-		        If pathString.Right(1) = "." Then pathString = pathString.Left(pathString.Length - 1)
+		        pathString = pathString.TrimRight(".")
 		        Error(pathString + " is not a dictionary.")
 		      End If
 		      
 		    Else
 		      // Create a new dictionary.
 		      Var d As New Dictionary
-		      mPath.Value(component) = d
-		      mPath = d
+		      mBasePath.Value(component) = d
+		      mBasePath = d
 		    End If
 		  Next component
 		  
-		  pathString = pathString.TrimRight(".")
+		  Consume("Expected a `]`.", XKTokenTypes.RSquare)
+		  Consume("Expected a line ending or the EOF.", XKTokenTypes.EOL, XKTokenTypes.EOF)
 		  
-		  Return New Dictionary("pathString":pathString, "key":key)
-		  
-		End Function
+		End Sub
 	#tag EndMethod
 
 	#tag Method, Flags = &h21, Description = 546865207061727365722069732070616E69636B696E67206265636175736520697420666F756E6420616E206572726F722E20476574206974206261636B206F6E20747261636B2E
@@ -610,16 +638,16 @@ Protected Class XKParser
 		HasErrors As Boolean
 	#tag EndComputedProperty
 
+	#tag Property, Flags = &h21, Description = 41207265666572656E636520746F207468652064696374696F6E6172792063757272656E746C79206265696E67207573656420617320746865206261736520666F722072656C61746976652070617468732E
+		Private mBasePath As Dictionary
+	#tag EndProperty
+
 	#tag Property, Flags = &h21, Description = 302D626173656420696E64657820696E20606D546F6B656E7360206F662074686520746F6B656E20746861742077696C6C2062652072657472696576656420776974682060416476616E63652829602E
 		Private mCurrent As Integer = 0
 	#tag EndProperty
 
 	#tag Property, Flags = &h21, Description = 5468652063757272656E7420746F6B656E20756E646572206576616C756174696F6E2E
 		Private mCurrentToken As XOOLKit.XKToken
-	#tag EndProperty
-
-	#tag Property, Flags = &h21, Description = 41207265666572656E636520746F207468652063757272656E742064696374696F6E617279206265696E67206D616E6970756C61746564202874686520227061746822292E
-		Private mPath As Dictionary
 	#tag EndProperty
 
 	#tag Property, Flags = &h21, Description = 5468652070726576696F757320746F6B656E206576616C756174656420286D6179206265204E696C292E

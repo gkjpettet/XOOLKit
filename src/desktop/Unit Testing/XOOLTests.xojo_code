@@ -143,6 +143,15 @@ Inherits TestGroup
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
+		Sub Example15Test()
+		  // Inline dictionaries.
+		  
+		  Run(CurrentMethodName)
+		  
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
 		Sub Example1Test()
 		  // Empty XOOL document.
 		  

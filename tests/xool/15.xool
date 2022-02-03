@@ -1,0 +1,6 @@
+d1 = {name = "Garry", age = 40}
+
+d2 = {
+	name = "Tony", 
+	age = 50 # Comments can go inside an inline dictionary
+	}

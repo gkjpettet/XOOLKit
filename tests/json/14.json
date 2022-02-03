@@ -1,4 +1,5 @@
 {
+	"rootKey": "test",
 	"user": {
 		"name": "Garry",
 		"age": 40,
@@ -7,6 +8,11 @@
 			"university": {
 				"name": "Imperial College", 
 				"degree": "MBBS"
+			},
+			"school": {
+				"name": "John Hampden",
+				"year": 1999, 
+				"town": "High Wycombe"
 			}
 		}
 	}
