@@ -528,7 +528,7 @@ Protected Class XKTokeniser
 		  If char = """" Then Return StringToken
 		  
 		  // ===========================
-		  // IDENTIFIERS, BOOLEANS & Nil
+		  // IDENTIFIERS, BOOLEANS & NIL
 		  // ===========================
 		  If char.IsASCIILetter Then Return IdentifierBooleanOrNilToken
 		  
