@@ -708,8 +708,8 @@ Protected Class XKTokeniser
 		  /// Equates to: `"hi\nthere\nagain"`
 		  ///
 		  /// A handful of escape sequences are supported:
-		  '     `\"`         // A double quote character.
-		  '     `\\`         // A backslash.
+		  '     `\"`         // Double quote character.
+		  '     `\\`         // Backslash.
 		  '     `\b`         // Backspace.
 		  '     `\e`         // ESC character.
 		  '     `\n`         // Newline.
@@ -749,15 +749,15 @@ Protected Class XKTokeniser
 		        
 		      Case "e"
 		        Advance
-		        lexeme.Add(&u27)
+		        lexeme.Add(&u1B)
 		        
 		      Case "n"
 		        Advance
-		        lexeme.Add(&u0a)
+		        lexeme.Add(&u0A)
 		        
 		      Case "r"
 		        Advance
-		        lexeme.Add(&u13)
+		        lexeme.Add(&u0D)
 		        
 		      Case "t"
 		        Advance

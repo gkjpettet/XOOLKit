@@ -1,0 +1,11 @@
+# Escape sequences in strings.
+
+quote 			= "\""
+backslash 		= "\\"
+backspace 		= "\b"
+escape 			= "\e"
+newline			= "\n"
+carriageReturn	= "\r"
+tab				= "\t"
+umlaut			= "\u00F6" # o with umlaut
+rocket			= "\U0001F680" # Rocket 🚀

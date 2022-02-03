@@ -137,10 +137,28 @@ Inherits TestGroup
 		End Sub
 	#tag EndMethod
 
+	#tag Method, Flags = &h0
+		Sub Example8Test()
+		  // Comment between dictionary path and key-value pairs.
+		  
+		  Run(CurrentMethodName)
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Sub Example9Test()
+		  // String escape sequences.
+		  
+		  Run(CurrentMethodName)
+		  
+		End Sub
+	#tag EndMethod
+
 	#tag Method, Flags = &h21, Description = 52756E7320616E2048544D4C2074657374206E616D6564205B6D6574686F644E616D655D2E
 		Private Sub Run(methodName As String)
 		  /// Runs a test named [methodName].
 		  
+		  // Get the number of the test to run.
 		  Var testNumber As Integer = _
 		  Integer.FromString(methodName.Replace("XOOLTests.Example", "").Replace("Test", ""))
 		  
