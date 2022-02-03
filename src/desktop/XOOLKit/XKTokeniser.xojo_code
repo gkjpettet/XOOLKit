@@ -487,7 +487,7 @@ Protected Class XKTokeniser
 		  End If
 		  
 		  // ===========================
-		  // COLOR LITERALS
+		  // & LITERALS
 		  // ===========================
 		  If char = "&" Then
 		    If Peek = "c" Then
