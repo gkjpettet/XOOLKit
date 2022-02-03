@@ -38,6 +38,10 @@ Protected Module XOOLKit
 		  
 		  Return GenerateJSON(Parse(s), expanded)
 		  
+		  Exception e As JSONException
+		    Var tErrors() As XOOLKit.XKTokeniserException
+		    Var pErrors() As XOOLKit.XKParserException
+		    Raise New XOOLKit.XKException(tErrors, pErrors, e.Message)
 		End Function
 	#tag EndMethod
 

@@ -181,6 +181,37 @@ Begin DesktopWindow WinDebugger
       Visible         =   True
       Width           =   80
    End
+   Begin DesktopButton ButtonToJSON
+      AllowAutoDeactivate=   True
+      Bold            =   False
+      Cancel          =   False
+      Caption         =   "To JSON"
+      Default         =   False
+      Enabled         =   True
+      FontName        =   "System"
+      FontSize        =   0.0
+      FontUnit        =   0
+      Height          =   20
+      Index           =   -2147483648
+      Italic          =   False
+      Left            =   204
+      LockBottom      =   True
+      LockedInPosition=   False
+      LockLeft        =   True
+      LockRight       =   False
+      LockTop         =   False
+      MacButtonStyle  =   0
+      Scope           =   2
+      TabIndex        =   4
+      TabPanelIndex   =   0
+      TabStop         =   True
+      Tooltip         =   ""
+      Top             =   670
+      Transparent     =   False
+      Underline       =   False
+      Visible         =   True
+      Width           =   97
+   End
 End
 #tag EndDesktopWindow
 
@@ -305,6 +336,13 @@ End
 		  Var d As Dictionary = Parse
 		  
 		  Break
+		End Sub
+	#tag EndEvent
+#tag EndEvents
+#tag Events ButtonToJSON
+	#tag Event
+		Sub Pressed()
+		  Call XOOLKit.ToJSON(Input.Text, True)
 		End Sub
 	#tag EndEvent
 #tag EndEvents
