@@ -150,11 +150,11 @@ Begin DesktopWindow WinDebugger
       _ScrollOffset   =   0
       _ScrollWidth    =   -1
    End
-   Begin DesktopButton ButtonDictToXOOL
+   Begin DesktopButton ButtonGenerateXOOL
       AllowAutoDeactivate=   True
       Bold            =   False
       Cancel          =   False
-      Caption         =   "Test Dict To XOOL"
+      Caption         =   "GenerateXOOL"
       Default         =   False
       Enabled         =   True
       FontName        =   "System"
@@ -179,7 +179,7 @@ Begin DesktopWindow WinDebugger
       Transparent     =   False
       Underline       =   False
       Visible         =   True
-      Width           =   155
+      Width           =   125
    End
 End
 #tag EndDesktopWindow
@@ -299,18 +299,42 @@ End
 		End Sub
 	#tag EndEvent
 #tag EndEvents
-#tag Events ButtonDictToXOOL
+#tag Events ButtonGenerateXOOL
 	#tag Event
 		Sub Pressed()
-		  #Pragma Warning "TODO"
+		  Var root As New Dictionary
+		  root.Value("name") = "Garry"
+		  root.Value("age") = 40
+		  root.Value("male") = True
+		  root.Value("favColour") = Color.FromString("&h007980FF")
+		  root.Value("ints") = Array(1, 2, 3, 4, 5)
 		  
-		  Var d As New Dictionary( _
-		  "name" : "Garry", _
-		  "age" : 40, _
-		  "male": True _
-		  )
+		  Var fi As New Dictionary("name": "Fi")
+		  Var aoife As New Dictionary("name": "Aoife")
+		  Var maebh As New Dictionary("name": "Maebh")
+		  root.Value("family") = Array(fi, aoife, maebh)
 		  
-		  Var xool As String = GenerateXOOL(d)
+		  // Array of arrays.
+		  Var intArray1() As Integer = Array(0, 1, 2)
+		  Var intArray2() As Integer = Array(7, 8, 9)
+		  Var parentArray() As Variant
+		  parentArray.Add(intArray1)
+		  parentArray.Add(intArray2)
+		  root.Value("arrays") = parentArray
+		  
+		  Var uni As New Dictionary
+		  uni.Value("institution") = "Imperial College"
+		  uni.Value("year") = 2005
+		  uni.Value("founder") = New Dictionary("name": "Prince Albert")
+		  
+		  Var school As New Dictionary
+		  school.Value("institution") = "John Hampden"
+		  school.Value("year") = 1999
+		  
+		  root.Value("uni") = uni
+		  root.Value("school") = school
+		  
+		  Var xool As String = GenerateXOOL(root)
 		  
 		  Break
 		End Sub

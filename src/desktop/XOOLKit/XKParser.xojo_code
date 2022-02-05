@@ -339,8 +339,9 @@ Protected Class XKParser
 		  ///  ^
 		  /// ```
 		  ///
-		  /// inlineDict   → LCURLY inlineDictKeyValue* RCURLY
-		  /// inlineDictKeyValue → IDENTIFIER EQUAL literals
+		  /// inlineDict         → LCURLY inlineDictKeyValue* RCURLY
+		  /// inlineDictKeyValue → IDENTIFIER EQUAL literal
+		  /// literal            → BOOLEAN | COLOR | DATETIME | NIL | NUMBER | STRING
 		  
 		  Var d As New Dictionary
 		  
