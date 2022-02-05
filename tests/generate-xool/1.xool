@@ -1,0 +1,5 @@
+s1 = "Hello world"
+s2 = "Hello\nworld"
+s3 = "A double quote: \""
+s4 = "Backslash \\"
+s5 = "\t\b\e"

@@ -1,5 +1,5 @@
 #tag Class
-Protected Class XOOLTests
+Protected Class ParseTests
 Inherits TestGroup
 	#tag Event
 		Sub Setup()
@@ -238,7 +238,7 @@ Inherits TestGroup
 		  
 		  // Get the number of the test to run.
 		  Var testNumber As Integer = _
-		  Integer.FromString(methodName.Replace("XOOLTests.Example", "").Replace("Test", ""))
+		  Integer.FromString(methodName.Replace("ParseTests.Example", "").Replace("Test", ""))
 		  
 		  // Get the names of the files containing the input XOOL and the corresponding JSON file.
 		  Var xoolFileName As String = testNumber.ToString + ".xool"
@@ -248,7 +248,7 @@ Inherits TestGroup
 		  Var xool As String
 		  Var xoolFile As FolderItem
 		  Try
-		    xoolFile = SpecialFolder.Resource("xool").Child(xoolFileName)
+		    xoolFile = SpecialFolder.Resource("parse-xool").Child(xoolFileName)
 		    Var tin As TextInputStream = TextInputStream.Open(xoolFile)
 		    xool = tin.ReadAll
 		    tin.Close
@@ -261,7 +261,7 @@ Inherits TestGroup
 		  Var expectedJSONFile As FolderItem
 		  Var expectedJSON As String
 		  Try
-		    expectedJSONFile = SpecialFolder.Resource("json").Child(jsonFileName)
+		    expectedJSONFile = SpecialFolder.Resource("parse-json").Child(jsonFileName)
 		    Var tin As TextInputStream = TextInputStream.Open(expectedJSONFile)
 		    expectedJSON = tin.ReadAll
 		    tin.Close
@@ -289,7 +289,7 @@ Inherits TestGroup
 		  If data.Value("equal") = True Then
 		    Assert.PassCustom(xool, expectedJSON, actualJSON)
 		  Else
-		    assert.FailCustom(xool, expectedJSON, actualJSON, data)
+		    Assert.FailCustom(xool, expectedJSON, actualJSON, data)
 		  End If
 		  
 		  Exception e

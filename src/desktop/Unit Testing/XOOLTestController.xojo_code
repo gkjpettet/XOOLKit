@@ -3,11 +3,12 @@ Protected Class XOOLTestController
 Inherits TestController
 	#tag Event
 		Sub InitializeTestGroups()
-		  // Instantiate TestGroup subclasses here so that they can be run
+		  // Instantiate TestGroup subclasses here so that they can be run.
 		  
 		  Var group As TestGroup
 		  
-		  group = New XOOLTests(Self, "Input")
+		  group = New ParseTests(Self, "Parsing")
+		  group = New GenerateTests(Self, "Generating")
 		  
 		  
 		End Sub

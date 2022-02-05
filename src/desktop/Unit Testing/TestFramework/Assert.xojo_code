@@ -15,9 +15,314 @@ Protected Class Assert
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
+		Sub AreEqual(expected As Currency, actual As Currency, message As String = "")
+		  If expected = actual Then
+		    Pass()
+		  Else
+		    Fail(FailEqualMessage(expected.ToString, actual.ToString), message)
+		  End If
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h0, CompatibilityFlags = (not TargetHasGUI and not TargetWeb and not TargetIOS) or  (TargetWeb) or  (TargetHasGUI) or  (TargetIOS)
+		Sub AreEqual(expected As DateTime, actual As DateTime, message As String = "")
+		  If expected Is Nil Xor actual Is Nil Then
+		    Fail("One given Date is Nil", message)
+		  ElseIf expected Is actual Or expected.SecondsFrom1970 = actual.SecondsFrom1970 Then
+		    Pass()
+		  Else
+		    Fail(FailEqualMessage(expected.SQLDateTime , actual.SQLDateTime), message)
+		  End If
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Sub AreEqual(expected() As Double, actual() As Double, message As String = "")
+		  Var expectedSize, actualSize As Double
+		  
+		  expectedSize = expected.LastIndex
+		  actualSize = actual.LastIndex
+		  
+		  If expectedSize <> actualSize Then
+		    Fail( "Expected Integer array Ubound [" + expectedSize.ToString + _
+		    "] but was [" + actualSize.ToString + "].", _
+		    message)
+		    Return
+		  End If
+		  
+		  For i As Integer = 0 To expectedSize
+		    If expected(i) <> actual(i) Then
+		      Fail( FailEqualMessage("Array(" + i.ToString + ") = '" + expected(i).ToString + "'", _
+		      "Array(" + i.ToString + ") = '" + actual(i).ToString + "'"), _
+		      message)
+		      Return
+		    End If
+		  Next
+		  
+		  Pass()
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Sub AreEqual(expected As Double, actual As Double, tolerance As Double, message As String = "")
+		  Var diff As Double
+		  
+		  diff = Abs(expected - actual)
+		  If diff <= (Abs(tolerance) + 0.00000001) Then
+		    Pass()
+		  Else
+		    'Fail(FailEqualMessage(Format(expected, "-#########.##########"), Format(actual, "-#########.##########")), message)
+		    Fail(FailEqualMessage(expected.ToString(Locale.Current, "#########.##########"), actual.ToString(Locale.Current, "#########.##########")), message)
+		  End If
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Sub AreEqual(expected As Double, actual As Double, message As String = "")
+		  Var tolerance As Double = 0.00000001
+		  
+		  AreEqual(expected, actual, tolerance, message)
+		  
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h0, CompatibilityFlags = (not TargetHasGUI and not TargetWeb and not TargetIOS) or  (TargetWeb) or  (TargetHasGUI)
+		Attributes( Deprecated )  Sub AreEqual(expected As Global.Date, actual As Global.Date, message As String = "")
+		  If expected Is actual Or expected.TotalSeconds = actual.TotalSeconds Then
+		    Pass()
+		  Else
+		    Fail(FailEqualMessage(expected.ShortDate + " " + expected.LongTime, actual.ShortDate + " " + actual.LongTime), message)
+		  End If
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Sub AreEqual(expected As Int16, actual As Int16, message As String = "")
+		  If expected = actual Then
+		    Pass()
+		  Else
+		    Fail(FailEqualMessage(expected.ToString, actual.ToString), message)
+		  End If
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Sub AreEqual(expected As Int32, actual As Int32, message As String = "")
+		  If expected = actual Then
+		    Pass()
+		  Else
+		    Fail(FailEqualMessage(expected.ToString, actual.ToString), message)
+		  End If
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Sub AreEqual(expected As Int64, actual As Int64, message As String = "")
+		  If expected = actual Then
+		    Pass()
+		  Else
+		    Fail(FailEqualMessage(expected.ToString, actual.ToString), message)
+		  End If
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Sub AreEqual(expected As Int8, actual As Int8, message As String = "")
+		  If expected = actual Then
+		    Pass()
+		  Else
+		    Fail(FailEqualMessage(expected.ToString, actual.ToString), message)
+		  End If
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Sub AreEqual(expected() As Integer, actual() As Integer, message As String = "")
+		  Var expectedSize, actualSize As Integer
+		  
+		  expectedSize = expected.LastIndex
+		  actualSize = actual.LastIndex
+		  
+		  If expectedSize <> actualSize Then
+		    Fail( "Expected Integer array Ubound [" + expectedSize.ToString + _
+		    "] but was [" + actualSize.ToString + "].", _
+		    message)
+		    Return
+		  End If
+		  
+		  For i As Integer = 0 To expectedSize
+		    If expected(i) <> actual(i) Then
+		      Fail( FailEqualMessage("Array(" + i.ToString + ") = '" + expected(i).ToString + "'", _
+		      "Array(" + i.ToString + ") = '" + actual(i).ToString + "'"), _
+		      message)
+		      Return
+		    End If
+		  Next
+		  
+		  Pass()
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h0, CompatibilityFlags = (not TargetHasGUI and not TargetWeb and not TargetIOS) or  (TargetWeb) or  (TargetHasGUI)
+		Sub AreEqual(expected() As String, actual() As String, message As String = "")
+		  Var expectedSize, actualSize As Integer
+		  
+		  expectedSize = expected.LastIndex
+		  actualSize = actual.LastIndex
+		  
+		  If expectedSize <> actualSize Then
+		    Fail( "Expected String array Ubound [" + expectedSize.ToString + _
+		    "] but was [" + actualSize.ToString + "].", _
+		    message)
+		    Return
+		  End If
+		  
+		  For i As Integer = 0 To expectedSize
+		    If expected(i) <> actual(i) Then
+		      Fail( FailEqualMessage("Array(" + i.ToString + ") = '" + expected(i) + "'", _
+		      "Array(" + i.ToString + ") = '" + actual(i) + "'"), _
+		      message)
+		      Return
+		    End If
+		  Next
+		  
+		  Pass()
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h0, CompatibilityFlags = (not TargetHasGUI and not TargetWeb and not TargetIOS) or  (TargetWeb) or  (TargetHasGUI)
+		Sub AreEqual(expected As String, actual As String, message As String = "")
+		  // This is a case-insensitive comparison
+		  
+		  If expected = actual Then
+		    Pass()
+		  Else
+		    Fail(FailEqualMessage(expected, actual), message )
+		  End If
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Sub AreEqual(expected() As Text, actual() As Text, message As String = "")
+		  Var expectedSize, actualSize As Integer
+		  
+		  expectedSize = expected.LastIndex
+		  actualSize = actual.LastIndex
+		  
+		  If expectedSize <> actualSize Then
+		    Fail( "Expected Text array Ubound [" + expectedSize.ToString + _
+		    "] but was [" + actualSize.ToString + "].", _
+		    message)
+		    Return
+		  End If
+		  
+		  For i As Integer = 0 To expectedSize
+		    If expected(i).Compare(actual(i)) <> 0 Then
+		      Fail( FailEqualMessage("Array(" + i.ToString + ") = '" + expected(i) + "'", _
+		      "Array(" + i.ToString + ") = '" + actual(i) + "'"), _
+		      message)
+		      Return
+		    End If
+		  Next
+		  
+		  Pass()
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Sub AreEqual(expected As UInt16, actual As UInt16, message As String = "")
+		  If expected = actual Then
+		    Pass()
+		  Else
+		    Fail(FailEqualMessage(expected.ToString, actual.ToString), message)
+		  End If
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Sub AreEqual(expected As UInt32, actual As UInt32, message As String = "")
+		  If expected = actual Then
+		    Pass()
+		  Else
+		    Fail(FailEqualMessage(expected.ToString, actual.ToString), message)
+		  End If
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Sub AreEqual(expected As UInt64, actual As UInt64, message As String = "")
+		  If expected = actual Then
+		    Pass()
+		  Else
+		    Fail(FailEqualMessage(expected.ToString, actual.ToString), message)
+		  End If
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Sub AreEqual(expected As UInt8, actual As UInt8, message As String = "")
+		  If expected = actual Then
+		    Pass()
+		  Else
+		    Fail(FailEqualMessage(expected.ToString, actual.ToString), message)
+		  End If
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h0, CompatibilityFlags = (not TargetHasGUI and not TargetWeb and not TargetIOS) or  (TargetWeb) or  (TargetHasGUI) or  (TargetIOS)
+		Attributes( Deprecated )  Sub AreEqual(expected As Xojo.Core.Date, actual As Xojo.Core.Date, message As String = "")
+		  If expected Is Nil Xor actual Is Nil Then
+		    Fail("One given Date is Nil", message)
+		  ElseIf expected Is actual Or expected.SecondsFrom1970 = actual.SecondsFrom1970 Then
+		    Pass()
+		  Else
+		    Fail(FailEqualMessage(expected.ToText , actual.ToText), message)
+		  End If
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h0, CompatibilityFlags = (not TargetHasGUI and not TargetWeb and not TargetIOS) or  (TargetWeb) or  (TargetHasGUI) or  (TargetIOS)
+		Attributes( Deprecated )  Sub AreEqual(expected As Xojo.Core.MemoryBlock, actual As Xojo.Core.MemoryBlock, message As String = "")
+		  If expected = actual Then
+		    Pass()
+		    Return
+		  End If
+		  
+		  If expected Is Nil Xor actual Is Nil Then
+		    Fail("One given MemoryBlock is Nil", message)
+		    Return
+		  End If
+		  
+		  Var expectedSize As Integer = expected.Size
+		  Var actualSize As Integer = actual.Size
+		  
+		  If expectedSize <> actualSize Then
+		    Fail( "Expected MemoryBlock Size [" + expectedSize.ToString + _
+		    "] but was [" + actualSize.ToString + "].", _
+		    message)
+		  Else
+		    Fail(FailEqualMessage(EncodeHexNewMB(expected), EncodeHexNewMB(actual)), message )
+		  End If
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
 		Sub Destructor()
 		  Group = Nil
 		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h21
+		Private Function EncodeHexNewMB(mb As Xojo.Core.MemoryBlock) As String
+		  Var r() As String
+		  
+		  Var lastByteIndex As Integer = mb.Size - 1
+		  For byteIndex As Integer = 0 To lastByteIndex
+		    r.Add mb.Data.Byte(byteIndex).ToHex
+		  Next
+		  
+		  Return String.FromArray(r, " " )
+		End Function
 	#tag EndMethod
 
 	#tag Method, Flags = &h0

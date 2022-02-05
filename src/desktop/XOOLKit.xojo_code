@@ -40,9 +40,13 @@ Protected Module XOOLKit
 		        Return SerializableArrayToXOOL(a)
 		      Catch e2 As TypeMismatchException
 		        Try
-		          Return ArrayOfArraysToXOOL(a)
+		          Return ObjectArrayToXOOL(a)
 		        Catch e3 As TypeMismatchException
-		          Raise New XOOLKit.XKException("Unable to serialize array.")
+		          Try
+		            Return ArrayOfArraysToXOOL(a)
+		          Catch e4 As TypeMismatchException
+		            Raise New XOOLKit.XKException("Unable to serialize array.")
+		          End Try
 		        End Try
 		      End Try
 		    End Try
@@ -338,9 +342,30 @@ Protected Module XOOLKit
 		End Function
 	#tag EndMethod
 
-	#tag Method, Flags = &h0, Description = 506172736573206120584F4F4C20646F63756D656E7420286073602920696E746F20612064696374696F6E61727920616E642072657475726E732069742E2052616973657320616E2060584B457863657074696F6E6020696620616E79206572726F7273206F636375722E
+	#tag Method, Flags = &h21
+		Private Function ObjectArrayToXOOL(objs() As Variant) As String
+		  // Returns a XOOL representation of an object array.
+		  
+		  Var s() As String
+		  
+		  s.Add("[")
+		  
+		  For Each v As Variant In objs
+		    s.Add(GenerateXOOL(v))
+		    s.Add(", ")
+		  Next v
+		  
+		  Call s.Pop
+		  
+		  s.Add("]")
+		  
+		  Return String.FromArray(s, "")
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0, Description = 506172736573206120584F4F4C20646F63756D656E7420696E746F20612064696374696F6E61727920616E642072657475726E732069742E2052616973657320616E2060584B457863657074696F6E6020696620616E79206572726F7273206F636375722E
 		Function ParseXOOL(s As String) As Dictionary
-		  /// Parses a XOOL document (`s`) into a dictionary and returns it. 
+		  /// Parses a XOOL document into a dictionary and returns it. 
 		  /// Raises an `XKException` if any errors occur.
 		  
 		  Var tokeniser As New XOOLKit.XKTokeniser
