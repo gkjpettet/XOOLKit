@@ -380,6 +380,99 @@ key2 = nil
 
 ### Color
 
+Color literals are prefixed with `&c` and then follow the CSS convention with three possibilities:
 
+```xool
+&cRGB      # red, green, blue
+&cRRGGBB   # red, red, green, green, blue, blue
+&cRRGGBBAA # red, red, green, green, blue, blue, alpha, alpha
+```
+
+Where RGBA are hexadecimal digits.
+
+### DateTime
+
+You can specify a date and time in SQL format:
+
+```xool
+xmas2022 = 2022-12-25 00:00:00 # YYYY-MM-DD HH:SS
+```
+
+If you don't need the time you can specify just the date:
+
+```xool
+newyears = 2022-01-01 # YYYY-MM-DD
+```
+
+If you aren't interested in the date, only the time you can use this format:
+
+```xool
+bedtime = 23:30:00 # HH:MM:SS
+```
+
+### Array
+
+Arrays are square brackets with values inside. Whitespace is ignored. Comments are permitted within arrays. Elements are separated by commas. Arrays can contain values of the same data types as allowed in key/value pairs. Values of different types may be mixed. Arrays **cannot** be nested.
+
+```xool
+integers = [ 1, 2, 3 ]
+mixed_array = [1, 2, "a", "b", "c"]
+string_array = [ "all", "strings", """are the same""", "type" ]
+
+# Mixed-type arrays are allowed
+numbers = [ 0.1, 0.2, 0.5, 1, 2, 5 ]
+contributors = [
+  "Foo Bar <foo@example.com>",
+  { name = "Baz Qux", email = "bazqux@example.com", url = "https://example.com/bazqux" }
+]
+```
+
+### Inline dictionary
+
+Inline dictionaries provide a more compact method for expressing a dictionary. Inline dictionaries must be fully defined within curly braces `{` and `}`. Within the braces, zero or more comma-separated key/value pairs may appear. Key/value pairs take the same form as key/value pairs in standard dictionaries. All value types are allowed, including inline dictionaries.
+
+Inline dictionaries are intended to appear on a single line. A terminating comma (also called trailing comma) is not permitted after the last key/value pair in an inline dictionary. No newlines are allowed between the curly braces unless they are valid within a value. Even so, it is strongly discouraged to break an inline dictionary onto multiples lines. If you find yourself needing to do this, you should use a standard dictionary with an absolute path.
+
+### Dictionary paths
+
+All keys entered in the document are by default children of the root dictionary. You can change this behaviour by specifying an absolute path within `[]` which will then cause all subsequent key/values to be relative to that path.
+
+```xool
+name = "Garry"
+hobbies.primary = "Programming"
+hobbies.secondary = "Movie watching"
+education.school = "John Hampden Grammar"
+education.uni = "Imperial College"
+```
+
+Equates to this in JSON:
+```json
+{
+  "name": "Garry", 
+  "hobbies": {
+    "primary": "Programming",
+    "secondary": "Movie watching"
+  },
+  "education": {
+    "school": "John Hampden",
+    "uni": "Imperial College"
+}
+```
+
+We can however break out these assignments more cleanly:
+
+```xool
+name = "Garry"
+
+[hobbies]
+primary = "Programming"
+secondary = "Movie watching"
+
+[education]
+school = "John Hampden Grammar"
+uni = "Imperial College"
+```
+
+The document is parsed from top-to-bottom so to switch back to the root dictionary use `[]` on its own. This is discouraged.
 
 [stringkit]: https://github.com/gkjpettet/StringKit 

@@ -288,29 +288,6 @@ Protected Class Assert
 		End Sub
 	#tag EndMethod
 
-	#tag Method, Flags = &h0, Description = 4661696C73207468652063757272656E7420746573742E
-		Sub FailCustom(input As String, expectedJSON As String, actualJSON As String, data As Dictionary)
-		  /// Fails the current test.
-		  
-		  Failed = True
-		  Group.CurrentTestResult.Result = TestResult.Failed
-		  
-		  Group.CurrentTestResult.Input = input
-		  Group.CurrentTestResult.Expected = expectedJSON
-		  Group.CurrentTestResult.Actual = actualJSON
-		  If data <> Nil Then
-		    Group.CurrentTestResult.Message = data.Lookup("errorMessage", "")
-		  End If
-		  
-		  If Group.StopTestOnFail Then
-		    #Pragma BreakOnExceptions False
-		    Raise New XojoUnitTestFailedException
-		    #Pragma BreakOnExceptions Default
-		  End If
-		  
-		End Sub
-	#tag EndMethod
-
 	#tag Method, Flags = &h21
 		Private Function FailEqualMessage(expected As String, actual As String) As String
 		  Var message As String
@@ -368,23 +345,6 @@ Protected Class Assert
 		    Message(message)
 		  End If
 		  
-		  
-		End Sub
-	#tag EndMethod
-
-	#tag Method, Flags = &h0, Description = 4D61726B207468652074657374206173207061737365642E
-		Sub PassCustom(input As String, expectedJSON As String, actualJSON As String)
-		  /// Mark the test as passed.
-		  
-		  If Group Is Nil Or Group.CurrentTestResult Is Nil Then Return
-		  
-		  Failed = False
-		  If Group.CurrentTestResult.Result <> TestResult.Failed Then
-		    Group.CurrentTestResult.Result = TestResult.Passed
-		    Group.CurrentTestResult.Input = input
-		    Group.CurrentTestResult.Actual = actualJSON
-		    Group.CurrentTestResult.Expected = expectedJSON
-		  End If
 		  
 		End Sub
 	#tag EndMethod

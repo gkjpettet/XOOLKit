@@ -77,10 +77,10 @@ Protected Class XKTokeniser
 		  End If
 		  
 		  // 3 digit Color literal?
-		  Var s As String = Peek
-		  If s.IsSpaceOrTabOrNewline Or s = "" Then
+		  Select Case Peek
+		  Case " ", &u09, &u0A, "", ",", "}", "]"
 		    Return New XKColorToken(mTokenStart, mLineNumber, ComputeLexeme(mTokenStart + 2, mCurrent - 1))
-		  End If
+		  End Select
 		  
 		  // Need to see at least 3 more hex digits.
 		  If Not Consume.IsHexDigit Or Not Consume.IsHexDigit Or Not Consume.IsHexDigit Then
@@ -88,21 +88,21 @@ Protected Class XKTokeniser
 		  End If
 		  
 		  // 6 digit Color literal?
-		  s = Peek
-		  If s.IsSpaceOrTabOrNewline Or s = "" Then
+		  Select Case Peek
+		  Case " ", &u09, &u0A, "", ",", "}", "]"
 		    Return New XKColorToken(mTokenStart, mLineNumber, ComputeLexeme(mTokenStart + 2, mCurrent - 1))
-		  End If
+		  End Select
 		  
 		  // 8 digit Color literal?
 		  If Peek.IsHexDigit And Peek(2).IsHexDigit Then
 		    Advance(2)
-		    s = Peek
-		    If s.IsSpaceOrTabOrNewline Or s = "" Then
+		    Select Case Peek
+		    Case " ", &u09, &u0A, "", ",", "}", "]"
 		      Return New XKColorToken(mTokenStart, mLineNumber, ComputeLexeme(mTokenStart + 2, mCurrent - 1))
 		    Else
 		      // Invalid character after these 8 hex digits.
 		      SyntaxError("Expected whitespace or EOF after Color literal,")
-		    End If
+		    End Select
 		  End If
 		  
 		End Function

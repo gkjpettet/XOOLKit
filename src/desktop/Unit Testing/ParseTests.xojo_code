@@ -186,6 +186,12 @@ Inherits TestGroup
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
+		Sub Example20Test()
+		  Run(CurrentMethodName)
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
 		Sub Example2Test()
 		  // Single comment.
 		  
@@ -250,6 +256,47 @@ Inherits TestGroup
 		End Sub
 	#tag EndMethod
 
+	#tag Method, Flags = &h21, Description = 4661696C73207468652063757272656E7420746573742E
+		Private Sub FailTest(a As Assert, input As String, expectedJSON As String, actualJSON As String, data As Dictionary)
+		  /// Fails the current test.
+		  
+		  a.Failed = True
+		  a.Group.CurrentTestResult.Result = TestResult.Failed
+		  
+		  a.Group.CurrentTestResult.Input = input
+		  a.Group.CurrentTestResult.Expected = expectedJSON
+		  a.Group.CurrentTestResult.Actual = actualJSON
+		  
+		  If data <> Nil Then
+		    a.Group.CurrentTestResult.Message = data.Lookup("errorMessage", "")
+		  End If
+		  
+		  If a.Group.StopTestOnFail Then
+		    #Pragma BreakOnExceptions False
+		    Raise New XojoUnitTestFailedException
+		    #Pragma BreakOnExceptions Default
+		  End If
+		  
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h21, Description = 4D61726B207468652074657374206173207061737365642E
+		Private Sub PassTest(a As Assert, input As String, expectedJSON As String, actualJSON As String)
+		  /// Mark the test as passed.
+		  
+		  If a.Group Is Nil Or a.Group.CurrentTestResult Is Nil Then Return
+		  
+		  a.Failed = False
+		  If a.Group.CurrentTestResult.Result <> TestResult.Failed Then
+		    a.Group.CurrentTestResult.Result = TestResult.Passed
+		    a.Group.CurrentTestResult.Input = input
+		    a.Group.CurrentTestResult.Actual = actualJSON
+		    a.Group.CurrentTestResult.Expected = expectedJSON
+		  End If
+		  
+		End Sub
+	#tag EndMethod
+
 	#tag Method, Flags = &h21, Description = 52756E7320616E2048544D4C2074657374206E616D6564205B6D6574686F644E616D655D2E
 		Private Sub Run(methodName As String)
 		  /// Runs a test named [methodName].
@@ -305,13 +352,20 @@ Inherits TestGroup
 		  // Check if these two JSON files are considered equivalent.
 		  Var data As Dictionary = CompareJSON(actualJSONFile, expectedJSONFile)
 		  If data.Value("equal") = True Then
-		    Assert.PassCustom(xool, expectedJSON, actualJSON)
+		    PassTest(Self.Assert, xool, expectedJSON, actualJSON)
 		  Else
-		    Assert.FailCustom(xool, expectedJSON, actualJSON, data)
+		    FailTest(Self.Assert, xool, expectedJSON, actualJSON, data)
 		  End If
 		  
-		  Exception e
-		    Assert.FailCustom(xool, expectedJSON, actualJSON, data)
+		  Exception e As XOOLKit.XKException
+		    Var s() As String
+		    For Each tokErr As XOOLKit.XKTokeniserException In e.TokeniserErrors
+		      s.Add("[line " + tokErr.LineNumber.ToString + "]: " + tokErr.Message)
+		    Next tokErr
+		    For Each parserErr As XOOLKit.XKParserException In e.ParserErrors
+		      s.Add("[line " + parserErr.Location.LineNumber.ToString + "]: " + parserErr.Message)
+		    Next parserErr
+		    FailTest(Self.Assert, xool, expectedJSON, actualJSON, New Dictionary("errorMessage": String.FromArray(s, &u0A)))
 		End Sub
 	#tag EndMethod
 
