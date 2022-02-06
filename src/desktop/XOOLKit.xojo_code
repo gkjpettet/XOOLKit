@@ -238,7 +238,7 @@ Protected Module XOOLKit
 		  /// May raise an `XKException`.
 		  
 		  If value IsA Dictionary Then
-		    Return DictionaryToXOOL(value, "")
+		    Return DictionaryToXOOL(value, "").Trim
 		    
 		  ElseIf value IsA XOOLKit.XKSerializable Then
 		    Return XOOLKit.XKSerializable(value).ToInlineDictionary

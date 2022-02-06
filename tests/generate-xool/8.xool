@@ -1,0 +1,20 @@
+[garry]
+name = "Garry"
+age = 40
+
+[garry.school]
+name = "Imperial College"
+
+[fi]
+name = "Fiona"
+age = 39
+
+[fi.school]
+name = "Edinburgh University"
+
+[tony]
+name = "Tony"
+age = 50
+
+[tony.school]
+name = "MIT"

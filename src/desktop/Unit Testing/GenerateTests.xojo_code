@@ -104,6 +104,44 @@ Inherits TestGroup
 		End Sub
 	#tag EndMethod
 
+	#tag Method, Flags = &h0
+		Sub Example8Test()
+		  Var contacts As New Dictionary
+		  
+		  Var garry As New Dictionary("name" : "Garry", "age" : 40)
+		  garry.Value("school") = New Dictionary("name" : "Imperial College")
+		  
+		  Var fi As New Dictionary("name" : "Fiona", "age" : 39)
+		  fi.Value("school") = New Dictionary("name" : "Edinburgh University")
+		  
+		  Var tony As New Dictionary("name" : "Tony", "age" : 50)
+		  tony.Value("school") = New Dictionary("name" : "MIT")
+		  
+		  contacts.Value("garry") = garry
+		  contacts.Value("fi") = fi
+		  contacts.Value("tony") = tony
+		  
+		  Run(CurrentMethodName, contacts)
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Sub Example9Test()
+		  Var contacts As New Dictionary
+		  
+		  Var garry As New SerializableContact("Garry", 40)
+		  Var fi As New SerializableContact("Fiona", 39)
+		  Var tony As New SerializableContact("Tony", 50)
+		  
+		  contacts.Value("garry") = garry
+		  contacts.Value("fi") = fi
+		  contacts.Value("tony") = tony
+		  
+		  Run(CurrentMethodName, contacts)
+		  
+		End Sub
+	#tag EndMethod
+
 	#tag Method, Flags = &h21, Description = 4661696C73207468652063757272656E7420746573742E
 		Private Sub FailTest(a As Assert, expected As String, actual As String)
 		  /// Fails the current test.
