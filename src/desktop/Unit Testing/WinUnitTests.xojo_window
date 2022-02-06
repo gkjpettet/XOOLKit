@@ -20,7 +20,7 @@ Begin DesktopWindow WinUnitTests
    MinimumHeight   =   800
    MinimumWidth    =   1000
    Resizeable      =   True
-   Title           =   "Markdown Unit Tests"
+   Title           =   "XOOLKit Unit Tests"
    Type            =   0
    Visible         =   True
    Width           =   1400
