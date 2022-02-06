@@ -20,7 +20,7 @@ JSON has curly braces all over the place and doesn't support comments. YAML supp
 ```xool
 # This is a comment.
 
-# These are values of the root dictionary...
+# These are values of the root dictionary.
 stringValue = "Some value"
 doubleValue = 1.00
 integerValue = 42
@@ -72,3 +72,34 @@ The above XOOL is equivalent to the following JSON:
   }
 }
 ```
+
+## Usage
+
+To use XOOL in your projects, you'll need to things:
+
+1. The `XOOLKit` module (found in the `/src/desktop/XOOLKit Dev Harness` project in this repo).
+2. My open source `StringKit` module available in [this repo][stringkit].
+
+Copy both `XOOLKit` and `StringKit` into your project and you're all set up. Mimicking Xojo's `ParseJSON()` and `GenerateJSON()` methods, `XOOLKit` adds to methods to the global namespace: `ParseXOOL()` and `GenerateXOOL()`. You can use them like so:
+
+```xojo
+// Convert a dictionary to a XOOL document.
+Var d As New Dictionary("name" : "Garry", "age" : 40)
+Var xool As String = GenerateXOOL(d)
+
+// Parse a XOOL document (e.g. from a file) into a dictionary.
+Try
+d = ParseXOOL(inputXOOL) // Assumes `inputXOOL` is a XOOL document.
+Catch e As XOOLKIT.XKException
+// There's a problem with the input XOOL.
+End Try
+```
+
+Exactly like `GenerateJSON()`, `GenerateXOOL()` can take any `Variant` value and return its XOOL representation (e.g. by double-quoting and escaping strings) but only passing a dictionary to `GenerateXOOL()` will result in a valid XOOL document.
+
+Whilst XOOL is not designed to be capable of serialising any arbitrary data structure, it is possible to serialise your own classes if you like. To do so, your class should implement the `XOOLKit.XKSerializable` interface. It has a single method (`ToInlineDictionary()`) that expects you to return (as a string) a representation of your class as a XOOL inline dictionary. See the test app for an example of a simple serialisable contact class.
+
+## Full Spec
+
+
+[stringkit]: https://github.com/gkjpettet/StringKit 
