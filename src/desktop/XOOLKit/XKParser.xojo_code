@@ -58,7 +58,7 @@ Protected Class XKParser
 		    
 		  ElseIf Match(XKTokenTypes.Number) Then
 		    If XKNumberToken(mPreviousToken).IsInteger Then
-		      values.Add(Variant.TypeInteger : XKNumberToken(mPreviousToken).Value)
+		      values.Add(Variant.TypeInt64 : XKNumberToken(mPreviousToken).Value)
 		    Else
 		      values.Add(Variant.TypeDouble : XKNumberToken(mPreviousToken).Value)
 		    End If
@@ -91,7 +91,7 @@ Protected Class XKParser
 		      
 		    ElseIf Match(XKTokenTypes.Number) Then
 		      If XKNumberToken(mPreviousToken).IsInteger Then
-		        values.Add(Variant.TypeInteger : XKNumberToken(mPreviousToken).Value)
+		        values.Add(Variant.TypeInt64 : XKNumberToken(mPreviousToken).Value)
 		      Else
 		        values.Add(Variant.TypeDouble : XKNumberToken(mPreviousToken).Value)
 		      End If
@@ -160,7 +160,7 @@ Protected Class XKParser
 		    Next p
 		    Return d
 		    
-		  Case Variant.TypeInteger
+		  Case Variant.TypeInt32, Variant.TypeInt64
 		    Var i() As Integer
 		    For Each p As Pair In values
 		      i.Add(p.Right)

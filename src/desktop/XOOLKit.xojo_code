@@ -63,7 +63,7 @@ Protected Module XOOLKit
 		  Case Variant.TypeDouble
 		    Return DoubleArrayToXOOL(a)
 		    
-		  Case Variant.TypeInt32, Variant.TypeInt64, Variant.TypeInteger
+		  Case Variant.TypeInt32, Variant.TypeInt64
 		    Return IntegerArrayToXOOL(a)
 		    
 		  Case Variant.TypeString, Variant.TypeText
@@ -266,9 +266,6 @@ Protected Module XOOLKit
 		    Case Variant.TypeInt64
 		      Return value.Int64Value.ToString
 		      
-		    Case Variant.TypeInteger
-		      Return value.IntegerValue.ToString
-		      
 		    Case Variant.TypeNil
 		      Return "Nil"
 		      
@@ -305,7 +302,7 @@ Protected Module XOOLKit
 		    
 		    Select Case entry.Value.Type
 		    Case Variant.TypeBoolean, Variant.TypeColor, Variant.TypeDateTime, Variant.TypeDouble, _
-		      Variant.TypeInt32, Variant.TypeInt64, Variant.TypeInteger, Variant.TypeNil, _
+		      Variant.TypeInt32, Variant.TypeInt64, Variant.TypeNil, _
 		      Variant.TypeString, Variant.TypeText
 		      s.Add(entry.Key.StringValue + " = " + GenerateXOOL(entry.Value))
 		    Else
@@ -575,5 +572,47 @@ Protected Module XOOLKit
 	#tag EndEnum
 
 
+	#tag ViewBehavior
+		#tag ViewProperty
+			Name="Name"
+			Visible=true
+			Group="ID"
+			InitialValue=""
+			Type="String"
+			EditorType=""
+		#tag EndViewProperty
+		#tag ViewProperty
+			Name="Index"
+			Visible=true
+			Group="ID"
+			InitialValue="-2147483648"
+			Type="Integer"
+			EditorType=""
+		#tag EndViewProperty
+		#tag ViewProperty
+			Name="Super"
+			Visible=true
+			Group="ID"
+			InitialValue=""
+			Type="String"
+			EditorType=""
+		#tag EndViewProperty
+		#tag ViewProperty
+			Name="Left"
+			Visible=true
+			Group="Position"
+			InitialValue="0"
+			Type="Integer"
+			EditorType=""
+		#tag EndViewProperty
+		#tag ViewProperty
+			Name="Top"
+			Visible=true
+			Group="Position"
+			InitialValue="0"
+			Type="Integer"
+			EditorType=""
+		#tag EndViewProperty
+	#tag EndViewBehavior
 End Module
 #tag EndModule
