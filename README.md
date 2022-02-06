@@ -80,7 +80,7 @@ To use XOOL in your projects, you'll need two components:
 1. The `XOOLKit` module (found in the `/src/desktop/XOOLKit Dev Harness` project in this repo).
 2. My open source `StringKit` module available in [this repo][stringkit].
 
-Copy both `XOOLKit` and `StringKit` into your project and you're all set up. Mimicking Xojo's `ParseJSON()` and `GenerateJSON()` methods, `XOOLKit` adds to methods to the global namespace: `ParseXOOL()` and `GenerateXOOL()`. You can use them like so:
+Copy both `XOOLKit` and `StringKit` into your project and you're all set up. Mimicking Xojo's `ParseJSON()` and `GenerateJSON()` methods, `XOOLKit` adds two methods to the global namespace: `ParseXOOL()` and `GenerateXOOL()`. You can use them like so:
 
 ```xojo
 // Convert a dictionary to a XOOL document.
