@@ -1,5 +1,5 @@
 #tag Class
-Protected Class XKDateTimeToken
+Private Class XKDateTimeToken
 Inherits XOOLKit.XKToken
 	#tag Method, Flags = &h0
 		Sub Constructor(tokenStart As Integer, lineNumber As Integer, value As DateTime)
@@ -64,30 +64,28 @@ Inherits XOOLKit.XKToken
 			Type="XOOLKit.XKTokenTypes"
 			EditorType="Enum"
 			#tag EnumValues
-				"0 - Comma"
-				"1 - Comment"
-				"2 - Dot"
-				"3 - EOF"
-				"4 - EOL"
-				"5 - Equal"
-				"6 - LCurly"
-				"7 - LSquare"
-				"8 - RCurly"
-				"9 - RSquare"
-				"10 - Undefined"
-				"11 - ColorLiteral"
+				"0 - BooleanLiteral"
+				"1 - ColorLiteral"
+				"2 - Comma"
+				"3 - Comment"
+				"4 - DateTime"
+				"5 - Dot"
+				"6 - EOF"
+				"7 - EOL"
+				"8 - Equal"
+				"9 - Identifier"
+				"10 - LCurly"
+				"11 - LSquare"
+				"12 - NilLiteral"
+				"13 - Number"
+				"14 - RCurly"
+				"15 - RSquare"
+				"16 - StringLiteral"
+				"17 - Undefined"
 			#tag EndEnumValues
 		#tag EndViewProperty
 		#tag ViewProperty
 			Name="AbsoluteStart"
-			Visible=false
-			Group="Behavior"
-			InitialValue="0"
-			Type="Integer"
-			EditorType=""
-		#tag EndViewProperty
-		#tag ViewProperty
-			Name="Length"
 			Visible=false
 			Group="Behavior"
 			InitialValue="0"

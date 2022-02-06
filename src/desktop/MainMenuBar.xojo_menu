@@ -124,36 +124,6 @@ Begin Menu MainMenuBar
       AutoEnable = True
       Visible = True
    End
-   Begin DesktopMenuItem WindowMenu
-      SpecialMenu = 0
-      Index = -2147483648
-      Text = "Window"
-      AutoEnabled = True
-      AutoEnable = True
-      Visible = True
-      Begin DesktopMenuItem WindowTests
-         SpecialMenu = 0
-         Index = -2147483648
-         Text = "Tests"
-         ShortcutKey = "1"
-         Shortcut = "Cmd+1"
-         MenuModifier = True
-         AutoEnabled = True
-         AutoEnable = True
-         Visible = True
-      End
-      Begin DesktopMenuItem WindowDebugger
-         SpecialMenu = 0
-         Index = -2147483648
-         Text = "Debugger"
-         ShortcutKey = "2"
-         Shortcut = "Cmd+2"
-         MenuModifier = True
-         AutoEnabled = True
-         AutoEnable = True
-         Visible = True
-      End
-   End
    Begin DesktopMenuItem TestsMenu
       SpecialMenu = 0
       Index = -2147483648

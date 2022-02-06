@@ -1,5 +1,5 @@
 #tag Class
-Protected Class XKBooleanToken
+Private Class XKBooleanToken
 Inherits XOOLKit.XKToken
 	#tag Method, Flags = &h0
 		Sub Constructor(tokenStart As Integer, lineNumber As Integer, value As Boolean)
@@ -77,11 +77,12 @@ Inherits XOOLKit.XKToken
 				"9 - Identifier"
 				"10 - LCurly"
 				"11 - LSquare"
-				"12 - Number"
-				"13 - RCurly"
-				"14 - RSquare"
-				"15 - StringLiteral"
-				"16 - Undefined"
+				"12 - NilLiteral"
+				"13 - Number"
+				"14 - RCurly"
+				"15 - RSquare"
+				"16 - StringLiteral"
+				"17 - Undefined"
 			#tag EndEnumValues
 		#tag EndViewProperty
 		#tag ViewProperty
@@ -106,6 +107,14 @@ Inherits XOOLKit.XKToken
 			Group="Behavior"
 			InitialValue="1"
 			Type="Integer"
+			EditorType=""
+		#tag EndViewProperty
+		#tag ViewProperty
+			Name="Value"
+			Visible=false
+			Group="Behavior"
+			InitialValue=""
+			Type="Boolean"
 			EditorType=""
 		#tag EndViewProperty
 	#tag EndViewBehavior

@@ -2,15 +2,6 @@
 Protected Class App
 Inherits DesktopApplication
 	#tag MenuHandler
-		Function WindowDebugger() As Boolean Handles WindowDebugger.Action
-			WinDebugger.Show
-			
-			Return True
-			
-		End Function
-	#tag EndMenuHandler
-
-	#tag MenuHandler
 		Function WindowTests() As Boolean Handles WindowTests.Action
 			WinUnitTests.Show
 			

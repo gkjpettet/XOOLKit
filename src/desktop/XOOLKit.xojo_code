@@ -534,6 +534,24 @@ Protected Module XOOLKit
 		End Function
 	#tag EndMethod
 
+	#tag Method, Flags = &h1, Description = 52657475726E73207468652063757272656E742076657273696F6E20696E2074686520666F726D617420604D414A4F522E4D494E4F522E5041544348602E
+		Protected Function Version() As String
+		  /// Returns the current version in the format `MAJOR.MINOR.PATCH`.
+		  
+		  Return VERSION_MAJOR.ToString + "." + VERSION_MINOR.ToString + "." + VERSION_PATCH.ToString
+		End Function
+	#tag EndMethod
+
+
+	#tag Constant, Name = VERSION_MAJOR, Type = Double, Dynamic = False, Default = \"1", Scope = Protected
+	#tag EndConstant
+
+	#tag Constant, Name = VERSION_MINOR, Type = Double, Dynamic = False, Default = \"0", Scope = Protected
+	#tag EndConstant
+
+	#tag Constant, Name = VERSION_PATCH, Type = Double, Dynamic = False, Default = \"0", Scope = Protected
+	#tag EndConstant
+
 
 	#tag Enum, Name = XKTokenTypes, Type = Integer, Flags = &h0
 		BooleanLiteral

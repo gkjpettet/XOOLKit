@@ -1,5 +1,5 @@
 #tag Class
-Protected Class XKNumberToken
+Private Class XKNumberToken
 Inherits XOOLKit.XKToken
 	#tag Method, Flags = &h0
 		Sub Constructor(tokenStart As Integer, lineNumber As Integer, value As Variant, isInteger As Boolean)
