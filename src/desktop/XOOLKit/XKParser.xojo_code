@@ -28,11 +28,10 @@ Protected Class XKParser
 		  ///  ^
 		  /// ```
 		  ///
+		  /// Arrays cannot be nested.
+		  ///
 		  /// array   → LSQUARE (literal (COMMA literal)*)? RSQUARE
 		  /// literal → BOOLEAN | COLOR | DATETIME | NIL | NUMBER | STRING
-		  
-		  /// value →   literal | array | inlineDict
-		  /// literal → STRING | NUMBER | BOOLEAN | COLOR | DATETIME | NIL
 		  
 		  // Empty array?
 		  If Match(XKTokenTypes.RSquare) Then
@@ -110,7 +109,14 @@ Protected Class XKParser
 		    End If
 		  Wend
 		  
-		  // We've collected all the values. Determine the common type.
+		  // We've collected all the values. Make sure we don't have any nested arrays.
+		  For Each p As Pair In values
+		    If p.Left = Variant.TypeArray Then
+		      Error("Nested arrays are not supported.")
+		    End If
+		  Next p
+		  
+		  // Determine the common type.
 		  Var commonType As Integer = values(0).Left
 		  For Each p As Pair In values
 		    If p.Left = Variant.TypeNil Then Continue

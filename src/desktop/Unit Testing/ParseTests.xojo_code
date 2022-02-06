@@ -153,8 +153,6 @@ Inherits TestGroup
 
 	#tag Method, Flags = &h0
 		Sub Example16Test()
-		  // Nested arrays.
-		  
 		  Run(CurrentMethodName)
 		End Sub
 	#tag EndMethod

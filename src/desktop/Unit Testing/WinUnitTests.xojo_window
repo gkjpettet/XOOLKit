@@ -1626,32 +1626,37 @@ End
 #tag Events MyToolbar
 	#tag Event
 		Sub Pressed(item As DesktopToolbarItem)
-		  Select Case item
-		  Case MyToolbar.RunButton
-		    RunUntilFail = False
-		    RunTests
+		  #If Not TargetMacOS
+		    MessageBox("Unit tests only supported on macOS due Feedback bug 66705")
 		    
-		  Case MyToolbar.RunUntilFailButton
-		    RunUntilFail = True
-		    RunTests
-		    
-		  Case MyToolbar.StopButton
-		    StopTests
-		    
-		  Case MyToolbar.ExportButton
-		    Var dlg As New SaveFileDialog
-		    Var f As FolderItem
-		    dlg.InitialFolder = SpecialFolder.Documents
-		    dlg.promptText = "Save results as"
-		    dlg.SuggestedFileName = "results.xml"
-		    dlg.Title = "Save Results"
-		    dlg.Filter = "xml"
-		    f = dlg.ShowModal()
-		    If f <> Nil Then
-		      ExportTests f.NativePath
-		    End If
-		    
-		  End Select
+		  #Else 
+		    Select Case item
+		    Case MyToolbar.RunButton
+		      RunUntilFail = False
+		      RunTests
+		      
+		    Case MyToolbar.RunUntilFailButton
+		      RunUntilFail = True
+		      RunTests
+		      
+		    Case MyToolbar.StopButton
+		      StopTests
+		      
+		    Case MyToolbar.ExportButton
+		      Var dlg As New SaveFileDialog
+		      Var f As FolderItem
+		      dlg.InitialFolder = SpecialFolder.Documents
+		      dlg.promptText = "Save results as"
+		      dlg.SuggestedFileName = "results.xml"
+		      dlg.Title = "Save Results"
+		      dlg.Filter = "xml"
+		      f = dlg.ShowModal()
+		      If f <> Nil Then
+		        ExportTests f.NativePath
+		      End If
+		      
+		    End Select
+		  #EndIf
 		End Sub
 	#tag EndEvent
 	#tag Event
