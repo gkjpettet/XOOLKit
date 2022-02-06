@@ -369,7 +369,7 @@ bool1 = True
 bool2 = false
 ```
 
-### Nil
+### Nil
 
 Nil is self-explanatory:
 
