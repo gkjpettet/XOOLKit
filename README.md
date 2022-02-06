@@ -75,7 +75,7 @@ The above XOOL is equivalent to the following JSON:
 
 ## Usage
 
-To use XOOL in your projects, you'll need to things:
+To use XOOL in your projects, you'll need two components:
 
 1. The `XOOLKit` module (found in the `/src/desktop/XOOLKit Dev Harness` project in this repo).
 2. My open source `StringKit` module available in [this repo][stringkit].
