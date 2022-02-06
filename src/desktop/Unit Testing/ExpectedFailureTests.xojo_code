@@ -60,6 +60,20 @@ Inherits TestGroup
 		End Sub
 	#tag EndMethod
 
+	#tag Method, Flags = &h0
+		Sub Example4Test()
+		  ExpectFail(CurrentMethodName, "Cannot redefine keys within the same dictionary.")
+		  
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Sub Example5Test()
+		  ExpectFail(CurrentMethodName, "Cannot change the type of an already defined key.")
+		  
+		End Sub
+	#tag EndMethod
+
 	#tag Method, Flags = &h21, Description = 52756E7320612074657374207468617420697320657870656374656420746F206661696C2E
 		Private Sub ExpectFail(methodName As String, message As String)
 		  /// Runs a test that is expected to fail.
@@ -90,8 +104,15 @@ Inherits TestGroup
 		  Try
 		    d = ParseXOOL(xool)
 		    DidntFail(Self.Assert, xool, message)
-		  Catch e
-		    SuccessfullyFailed(Self.Assert, xool, message)
+		  Catch e As XOOLKit.XKException
+		    Var s() As String
+		    For Each tokErr As XOOLKit.XKTokeniserException In e.TokeniserErrors
+		      s.Add(tokErr.Message)
+		    Next tokErr
+		    For Each parserErr As XOOLKit.XKParserException In e.ParserErrors
+		      s.Add(parserErr.Message)
+		    Next parserErr
+		    SuccessfullyFailed(Self.Assert, xool, String.FromArray(s, &u0A))
 		  End Try
 		  
 		End Sub

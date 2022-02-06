@@ -1,0 +1,3 @@
+dog.breed = "Poodle" # Best practice
+dog . temperament = "Docile" # Same as dog.temperament
+dog   .sheds = True # Same as dog.sheds

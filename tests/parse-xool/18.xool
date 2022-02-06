@@ -1,0 +1,5 @@
+# This makes the key "fruit" into a dictionary.
+fruit.apple.smooth = true
+
+# So then you can add to the dictionary "fruit" like so:
+fruit.orange = 2

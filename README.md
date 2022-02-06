@@ -139,4 +139,81 @@ There must be a newline (or the end of the file) after a key/value pair:
 key1 = "value1" key2 = "value2" # Invalid.
 ```
 
+### Keys
+
+A key may be either bare or dotted.
+
+**Bare keys** may only contain ASCII letters, digits or the underscore (`A-Za-z0-9_`). They must begin with an ASCII letter.
+
+```xool
+key = "value"
+another_key = "value"
+key123 = "value"
+```
+
+A bare key must be non-empty:
+
+```xool
+= "no key name" # Invalid.
+```
+
+**Dotted keys** are a sequence of bare keys joined with a dot. This allows you to group similar properties together:
+
+```xool
+name = "Fido"
+physical.breed = "Poodle"
+physical.color = "Brown" # Could use a color literal here instead of a string.
+```
+
+This would translate to JSON as:
+
+```json
+{
+  "name": "Fido",
+  "physical": {
+    "breed": "Poodle",
+    "color": "Brown"
+  }
+}
+```
+
+Whitespace around dot-separated parts is ignored but it's best practice to not use excessive whitespace:
+
+```xool
+dog.breed = "Poodle" # Best practice
+dog . temperament = "Docile" # Same as dog.temperament
+dog   .sheds = True # Same as dog.sheds
+```
+
+Indentation is ignored.
+
+Defining a key multiple times in the same dictionary is invalid:
+
+```xool
+# Don't do this
+name = "Garry"
+name = "Dave"
+```
+
+As long as a key hasn't been directly defined, you can still write to it and to keys within it.
+
+```xool
+# This makes the key "fruit" into a dictionary.
+fruit.apple.smooth = true
+
+# So then you can add to the dictionary "fruit" like so:
+fruit.orange = 2
+```
+
+```xool
+# This is invalid.
+
+# This defines the value of fruit.apple to be an integer.
+fruit.apple = 1
+
+# But then this treats fruit.apple like it's a table.
+# You can't turn an integer into a table.
+fruit.apple.smooth = true
+```
+
 [stringkit]: https://github.com/gkjpettet/StringKit 
