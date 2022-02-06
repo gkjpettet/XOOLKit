@@ -1,0 +1,4 @@
+# Invalid doubles.
+invalid_double_1 = .7
+invalid_double_2 = 7.
+invalid_double_3 = 3.e+20

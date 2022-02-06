@@ -122,6 +122,7 @@ These are the atomic building blocks of a XOOL document. Keys are on the left ha
 - String
 - Number
 - Boolean
+- Nil
 - Color
 - DateTime
 - Array
@@ -215,5 +216,170 @@ fruit.apple = 1
 # You can't turn an integer into a table.
 fruit.apple.smooth = true
 ```
+
+Defining dotted keys out-of-order is discouraged.
+
+```xool
+# Valid but not best practice.
+
+apple.type = "fruit"
+orange.type = "fruit"
+
+apple.skin = "thin"
+orange.skin = "thick"
+
+apple.color = "red"
+orange.color = "orange"
+
+# Recommended.
+
+apple.type = "fruit"
+apple.skin = "thin"
+apple.color = "red"
+
+orange.type = "fruit"
+orange.skin = "thick"
+orange.color = "orange"
+```
+
+Keys are **case insensitive**.
+
+### String
+
+There are two types of string values in XOOL: **standard** and **raw**. All string must contain only valid UTF-8 characters.
+
+**Standard strings** are surrounded by double quotes (`"`).Any Unicode character may be used except those that must be escaped. A handful of escape sequences are supported:
+
+```nohighlight
+\"          # Double quote character.
+\\          # Backslash.
+\b          # Backspace.
+\e          # ESC character.
+\n          # Newline.
+\r          # Carriage return.
+\t          # Tab.
+\u0041      # Unicode code point (4 hex digits)
+\U0001F64A  # Unicode code point (8 hex digits)
+```
+
+```xool
+str = "A string. \"\t\\" # A string. "  \
+```
+
+Any Unicode character may be escaped with the `\uXXXX` or `\UXXXXXXXX` forms where `X` is a valid hexadecimal digit.
+
+Standard strings can also span multiple lines. When they do, the newline character within the string will always be normalised to the Unix line ending (`\n`):
+
+```xool
+str = "hi
+there,
+again"
+```
+
+**Raw strings** are surrounded by three double quotation marks (`"""`). Characters within raw strings are treated literally with no escaping. They may also span multiple lines:
+
+```xool
+str1 = """
+Roses are red
+Violets are blue"""
+```
+
+To avoid introducing extraneous whitespace, use a "line ending backslash" with raw strings. When the last non-whitespace character on a line is a `\`, it will be trimmed along with all whitespace (including newlines) up to the next non-whitespace character or closing delimiter:
+```
+# The following strings are equivalent:
+str1 = "The quick brown fox jumps over the lazy dog."
+
+str2 = """
+The quick brown \
+
+
+  fox jumps over \
+    the lazy dog."""
+
+str3 = """\
+       The quick brown \
+       fox jumps over \
+       the lazy dog.\
+       """
+```
+
+### Number
+
+Numbers may be either integers or double values. They may be prefixed with a `-` sign:
+
+```xool
+int1 = 42
+int2 = -10
+dbl1 = 1.0
+dbl2 = -2.5
+```
+
+Non-negative integer values may be expressed in hexadecimal, octal or binary using the same syntax as Xojo uses:
+
+```xool
+# Hexadecimal with prefix `&h`
+hex1 = &hDEADBEEF
+hex2 = &habcdef
+hex3 = &h12ab34cd
+
+# Octal with prefix `&o`
+oct1 = &o01234567
+oct2 = &o755 # useful for Unix file permissions
+
+# Binary with prefix `&b`
+bin1 = &b11010110
+```
+
+Doubles are parsed as 64-bit values. A double consists of an integer part (which follows the same rules as decimal integer values) followed by a fractional part and/or an exponent part. If both a fractional part and exponent part are present, the fractional part must precede the exponent part:
+
+```xool
+# Fractional.
+dbl1 = 1.0
+dbl2 = 3.1415
+dbl3 = -0.01
+
+# Exponent.
+dbl4 = 5e+22
+dbl5 = 1e06
+dbl6 = -2E-2
+
+# Both.
+dbl7 = 6.626e-34
+```
+
+A fractional part is a decimal point followed by one or more digits.
+
+An exponent part is an `E` (upper or lower case) followed by an integer part (which follows the same rules as decimal integer values but may include leading zeros).
+
+The decimal point, if used, must be surrounded by at least one digit on each side.
+
+```xool
+# Invalid doubles.
+invalid_double_1 = .7
+invalid_double_2 = 7.
+invalid_double_3 = 3.e+20
+```
+
+### Boolean
+
+Booleans are how you would expect. They are case insensitive.
+
+```xool
+bool1 = True
+bool2 = false
+```
+
+### Nil
+
+Nil is self-explanatory:
+
+```xool
+key1 = Nil
+key2 = nil
+```
+
+### Color
+
+
 
 [stringkit]: https://github.com/gkjpettet/StringKit 
