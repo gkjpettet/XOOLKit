@@ -23,6 +23,7 @@ DesktopWindow=WinUnitTests;Unit Testing/WinUnitTests.xojo_window;&h000000005E851
 DesktopToolbar=UnitTestingToolbar;Unit Testing/UnitTestingToolbar.xojo_toolbar;&h000000004C5F6799;&h000000002516B04D;false
 Class=XOOLTestController;Unit Testing/XOOLTestController.xojo_code;&h000000004291DFFF;&h000000002516B04D;false
 Class=ParseTests;Unit Testing/ParseTests.xojo_code;&h000000007187D7FF;&h000000002516B04D;false
+Class=ExpectedFailureTests;Unit Testing/ExpectedFailureTests.xojo_code;&h0000000006FE07FF;&h000000002516B04D;false
 Class=GenerateTests;Unit Testing/GenerateTests.xojo_code;&h0000000059DBCFFF;&h000000002516B04D;false
 Folder=TestFramework;Unit Testing/TestFramework;&h000000003E1A9B41;&h000000002516B04D;false
 Class=TestGroup;Unit Testing/TestFramework/TestGroup.xojo_code;&h000000006F90619D;&h000000003E1A9B41;false

@@ -9,8 +9,7 @@ Inherits TestController
 		  
 		  group = New ParseTests(Self, "Parsing")
 		  group = New GenerateTests(Self, "Generating")
-		  
-		  
+		  group = New ExpectedFailureTests(Self, "Expected Failures")
 		End Sub
 	#tag EndEvent
 

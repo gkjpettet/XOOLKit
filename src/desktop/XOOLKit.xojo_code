@@ -377,6 +377,7 @@ Protected Module XOOLKit
 		  Catch e As XOOLKit.XKTokeniserException
 		    Var error As New XOOLKit.XKException
 		    error.TokeniserErrors.Add(e)
+		    #Pragma BreakOnExceptions False
 		    Raise error
 		  End Try
 		  
@@ -385,6 +386,7 @@ Protected Module XOOLKit
 		    For Each e As XOOLKit.XKParserException In parser.Errors
 		      error.ParserErrors.Add(e)
 		    Next e
+		    #Pragma BreakOnExceptions False
 		    Raise error
 		  End If
 		  

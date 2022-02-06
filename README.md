@@ -101,5 +101,42 @@ Whilst XOOL is not designed to be capable of serialising any arbitrary data stru
 
 ## Full Spec
 
+### Comment
+
+A hash symbol marks the start of a comment. Comments run to the end of the line. They can occur anywhere, even within arrays.
+
+```xool
+# This is a full line comment.
+key1 = "value" # This is a comment at the end of a line.
+key2 = [
+  1, 
+  2, # inline comment
+  3
+]
+```
+
+### Key / Value Pair
+
+These are the atomic building blocks of a XOOL document. Keys are on the left hand side of the equal sign and the value is on the right. Whitespace is ignored around keys and values. The key, `=` sign and value must be on the same line although certain values (e.g. strings) can span multiple lines. Values must be one of the following types:
+
+- String
+- Number
+- Boolean
+- Color
+- DateTime
+- Array
+- Inline dictionary
+
+Unspecified values are invalid:
+
+```xool
+key = # Invalid.
+```
+
+There must be a newline (or the end of the file) after a key/value pair:
+
+```xool
+key1 = "value1" key2 = "value2" # Invalid.
+```
 
 [stringkit]: https://github.com/gkjpettet/StringKit 
