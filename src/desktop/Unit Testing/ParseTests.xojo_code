@@ -190,6 +190,12 @@ Inherits TestGroup
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
+		Sub Example21Test()
+		  Run(CurrentMethodName)
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
 		Sub Example2Test()
 		  // Single comment.
 		  

@@ -204,7 +204,7 @@ Protected Class XKParser
 		  ///   `data[pathString]` is the path as a dot-delimited string (e.g: "some.path").
 		  ///   `data[key]` is the string key to assign to.
 		  ///
-		  /// Assumes the previous token was an identifier:
+		  /// Assumes the previous token was a keyName:
 		  ///
 		  /// ```
 		  /// some.other.path = "hi"
@@ -213,11 +213,13 @@ Protected Class XKParser
 		  /// age = 40
 		  ///     ^
 		  /// ```
+		  ///
+		  /// keyName → IDENTIFIER | NIL | BOOLEAN
 		  
 		  // Get the path and key.
 		  Var components() As String = Array(mPreviousToken.Lexeme)
 		  While Match(XKTokenTypes.Dot)
-		    If Match(XKTokenTypes.Identifier) Then
+		    If Match(XKTokenTypes.Identifier, XKTokenTypes.NilLiteral, XKTokenTypes.BooleanLiteral) Then
 		      components.Add(mPreviousToken.Lexeme)
 		    Else
 		      Error("Expected an identifier after the dot.")
@@ -314,7 +316,7 @@ Protected Class XKParser
 		  ///
 		  /// expression → keyValue | setBasePath
 		  
-		  If Match(XKTokenTypes.Identifier) Then
+		  If Match(XKTokenTypes.Identifier, XKTokenTypes.NilLiteral, XKTokenTypes.BooleanLiteral) Then
 		    KeyValue
 		    
 		  ElseIf Match(XKTokenTypes.LSquare) Then
@@ -386,10 +388,11 @@ Protected Class XKParser
 		  /// ^
 		  /// ```
 		  ///
-		  /// inlineDictKeyValue → IDENTIFIER EQUAL inlineDictValue
+		  /// inlineDictKeyValue → keyName EQUAL inlineDictValue
+		  /// keyName            → IDENTIFIER | NIL | BOOLEAN
 		  /// inlineDictValue    → BOOLEAN | COLOR | DATETIME | NIL | NUMBER | STRING
 		  
-		  Consume("Expected a key.", XKTokenTypes.Identifier)
+		  Consume("Expected a key.", XKTokenTypes.Identifier, XKTokenTypes.NilLiteral, XKTokenTypes.BooleanLiteral)
 		  Var key As String = mPreviousToken.Lexeme
 		  
 		  // Need to see an `=` sign.
@@ -549,15 +552,17 @@ Protected Class XKParser
 		  /// ```
 		  ///
 		  /// setBasePath  → LSQUARE path RSQUARE terminator
-		  /// path         → IDENTIFIER (DOT IDENTIFIER)*
+		  /// path         → keyName (DOT IDENTIFIER)*
+		  /// keyName      → IDENTIFIER | NIL | BOOLEAN
 		  /// terminator   → EOL | EOF
 		  
-		  Consume("Expected an identifier.", XKTokenTypes.Identifier)
+		  Consume("Expected an identifier.", XKTokenTypes.Identifier, _
+		  XKTokenTypes.NilLiteral, XKTokenTypes.BooleanLiteral)
 		  
 		  // Get the path.
 		  Var components() As String = Array(mPreviousToken.Lexeme)
 		  While Match(XKTokenTypes.Dot)
-		    If Match(XKTokenTypes.Identifier) Then
+		    If Match(XKTokenTypes.Identifier, XKTokenTypes.NilLiteral, XKTokenTypes.BooleanLiteral) Then
 		      components.Add(mPreviousToken.Lexeme)
 		    Else
 		      Error("Expected an identifier after the dot.")

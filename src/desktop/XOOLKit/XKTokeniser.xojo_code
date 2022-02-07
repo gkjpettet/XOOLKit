@@ -369,7 +369,7 @@ Protected Class XKTokeniser
 		    Return New XKBooleanToken(mTokenStart, mLineNumber, False)
 		    
 		  ElseIf lexeme = "Nil" Then // Case insensitive.
-		    Return MakeToken(XKTokenTypes.NilLiteral)
+		    Return New XKToken(XKTokenTypes.NilLiteral, mTokenStart, mLineNumber, lexeme)
 		    
 		  Else
 		    Return New XKToken(XKTokenTypes.Identifier, mTokenStart, mLineNumber, lexeme)

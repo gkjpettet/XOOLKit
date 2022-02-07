@@ -1,0 +1,7 @@
+{
+	"nil": "hello",
+	"true": 10,
+	"dog": {
+		"false": 5
+	}
+}

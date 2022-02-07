@@ -339,6 +339,23 @@ Protected Module XOOLKit
 		End Function
 	#tag EndMethod
 
+	#tag Method, Flags = &h1, Description = 52657475726E7320547275652069662060736020697320612076616C696420584F4F4C20636F6C6F72206C69746572616C2E
+		Protected Function IsColor(s As String) As Boolean
+		  /// Returns True if `s` is a valid XOOL color literal.
+		  
+		  #Pragma BreakOnExceptions False
+		  
+		  Try
+		    Var t As New XKColorToken(0, 0, s)
+		    #Pragma Unused t
+		    Return True
+		  Catch e As RuntimeException
+		    Return False
+		  End Try
+		  
+		End Function
+	#tag EndMethod
+
 	#tag Method, Flags = &h21
 		Private Function ObjectArrayToXOOL(objs() As Variant) As String
 		  // Returns a XOOL representation of an object array.
@@ -548,7 +565,7 @@ Protected Module XOOLKit
 	#tag Constant, Name = VERSION_MINOR, Type = Double, Dynamic = False, Default = \"0", Scope = Protected
 	#tag EndConstant
 
-	#tag Constant, Name = VERSION_PATCH, Type = Double, Dynamic = False, Default = \"0", Scope = Protected
+	#tag Constant, Name = VERSION_PATCH, Type = Double, Dynamic = False, Default = \"1", Scope = Protected
 	#tag EndConstant
 
 

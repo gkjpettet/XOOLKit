@@ -5,8 +5,7 @@ Inherits XOOLKit.XKToken
 		Sub Constructor(tokenStart As Integer, lineNumber As Integer, value As Boolean)
 		  Super.Constructor(XKTokenTypes.BooleanLiteral, tokenStart, lineNumber)
 		  Self.Value = value
-		  
-		  
+		  Self.Lexeme = If(Self.Value, "true", "false")
 		End Sub
 	#tag EndMethod
 
