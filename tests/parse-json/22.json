@@ -1,0 +1,12 @@
+{
+	"colors": {
+		"background": "123",
+		"linux": {
+			"background": "456"
+		}
+	}, 
+	"tabs": {
+		"primary": "123",
+		"secondary": "456"
+	}
+}

@@ -432,7 +432,7 @@ Protected Class XKParser
 		  ///
 		  /// keyValue   → key EQUAL value terminator
 		  /// key        → IDENTIFIER (DOT IDENTIFIER)*
-		  /// value      → literal | array | inlineDict
+		  /// value      → key | literal | array | inlineDict
 		  /// terminator → EOL | EOF
 		  ///
 		  /// E.g:
@@ -615,10 +615,43 @@ Protected Class XKParser
 		Private Function Value() As Variant
 		  /// Parses and returns the value component of a key-value pair.
 		  ///
-		  /// value →   literal | array | inlineDict
+		  /// value   → key | literal | array | inlineDict
+		  /// key     → IDENTIFIER (DOT IDENTIFIER)*
 		  /// literal → STRING | NUMBER | BOOLEAN | COLOR | DATETIME | NIL
 		  
-		  If Match(XKTokenTypes.StringLiteral) Then
+		  If Match(XKTokenTypes.Identifier) Then
+		    Var components() As String = Array(mPreviousToken.Lexeme)
+		    // Consume the path.
+		    While Match(XKTokenTypes.Dot)
+		      If Match(XKTokenTypes.Identifier, XKTokenTypes.NilLiteral, XKTokenTypes.BooleanLiteral) Then
+		        components.Add(mPreviousToken.Lexeme)
+		      Else
+		        Error("Expected an identifier after the dot.")
+		      End If
+		    Wend
+		    // The key is the last component.
+		    Var key As String = components.Pop
+		    // A path is only valid as a value if it has already been declared.
+		    Var tmpDict As Dictionary = mRoot
+		    Var path As String
+		    If components.Count > 0 Then
+		      For Each component As String In components
+		        path = path + component + "."
+		        If tmpDict.HasKey(component) And tmpDict.Value(component) IsA Dictionary Then
+		          tmpDict = tmpDict.Value(component)
+		        Else
+		          path = path.TrimRight(".")
+		          Error(path + " is not a declared dictionary.")
+		        End If
+		      Next component
+		    End If
+		    If tmpDict.HasKey(key) Then
+		      Return tmpDict.Value(key)
+		    Else
+		      Error(path + key + " is not a valid path.")
+		    End If
+		    
+		  ElseIf Match(XKTokenTypes.StringLiteral) Then
 		    Return mPreviousToken.Lexeme
 		    
 		  ElseIf Match(XKTokenTypes.Number) Then

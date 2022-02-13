@@ -1,0 +1,7 @@
+[colors]
+background = "123"
+linux.background = "456"
+
+[tabs]
+primary = colors.background
+secondary = colors.linux.background

@@ -1,0 +1,5 @@
+[tabs]
+primary = colors.background
+
+[colors]
+background = "123"
