@@ -202,6 +202,103 @@ Inherits TestGroup
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
+		Sub Example23Test()
+		  // ColorGroup testing.
+		  //
+		  // Example 23:
+		  // ```
+		  // # ColorGroup testing.
+		  // 
+		  // red3Blue3 = &gF00 : 00F
+		  // red3Blue6 = &gF00 : 0000FF
+		  // red3Blue8 = &gF00 : 0000FF00
+		  // 
+		  // red6Blue3 = &gFF0000 : 00F
+		  // red6Blue6 = &gFF0000 : 0000FF
+		  // red6Blue8 = &gFF0000 : 0000FF00
+		  // 
+		  // red8Blue3 = &gFF000000 : 00F
+		  // red8Blue6 = &gFF000000 : 0000FF
+		  // red8Blue8 = &gFF000000 : 0000FF00
+		  // ```
+		  
+		  Var d As Dictionary = ParseXOOL(EXAMPLE_23)
+		  
+		  Var red3Blue3 As ColorGroup = d.Value("red3Blue3")
+		  Var tmpValues() As Color = red3Blue3.Values
+		  Assert.AreEqual(tmpValues(0), Color.Red, "red3Blue3")
+		  Assert.AreEqual(tmpValues(1), Color.Blue, "red3Blue3")
+		  
+		  Var red3Blue6 As ColorGroup = d.Value("red3Blue6")
+		  tmpValues = red3Blue6.Values
+		  Assert.AreEqual(tmpValues(0), Color.Red, "red3Blue6")
+		  Assert.AreEqual(tmpValues(1), Color.Blue, "red3Blue6")
+		  
+		  Var red3Blue8 As ColorGroup = d.Value("red3Blue8")
+		  tmpValues = red3Blue8.Values
+		  Assert.AreEqual(tmpValues(0), Color.Red, "red3Blue8")
+		  Assert.AreEqual(tmpValues(1), Color.Blue, "red3Blue8")
+		  
+		  Var red6Blue3 As ColorGroup = d.Value("red6Blue3")
+		  tmpValues = red6Blue3.Values
+		  Assert.AreEqual(tmpValues(0), Color.Red, "red6Blue3")
+		  Assert.AreEqual(tmpValues(1), Color.Blue, "red6Blue3")
+		  
+		  Var red6Blue6 As ColorGroup = d.Value("red6Blue6")
+		  tmpValues = red6Blue6.Values
+		  Assert.AreEqual(tmpValues(0), Color.Red, "red6Blue6")
+		  Assert.AreEqual(tmpValues(1), Color.Blue, "red6Blue6")
+		  
+		  Var red6Blue8 As ColorGroup = d.Value("red6Blue8")
+		  tmpValues = red6Blue8.Values
+		  Assert.AreEqual(tmpValues(0), Color.Red, "red6Blue8")
+		  Assert.AreEqual(tmpValues(1), Color.Blue, "red6Blue8")
+		  
+		  Var red8Blue3 As ColorGroup = d.Value("red8Blue3")
+		  tmpValues = red8Blue3.Values
+		  Assert.AreEqual(tmpValues(0), Color.Red, "red8Blue3")
+		  Assert.AreEqual(tmpValues(1), Color.Blue, "red8Blue3")
+		  
+		  Var red8Blue6 As ColorGroup = d.Value("red8Blue6")
+		  tmpValues = red8Blue6.Values
+		  Assert.AreEqual(tmpValues(0), Color.Red, "red8Blue6")
+		  Assert.AreEqual(tmpValues(1), Color.Blue, "red8Blue6")
+		  
+		  Var red8Blue8 As ColorGroup = d.Value("red8Blue8")
+		  tmpValues = red8Blue8.Values
+		  Assert.AreEqual(tmpValues(0), Color.Red, "red8Blue8")
+		  Assert.AreEqual(tmpValues(1), Color.Blue, "red8Blue8")
+		  
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Sub Example24Test()
+		  // ColorGroup array testing.
+		  //
+		  // Example 24:
+		  // ```
+		  // # ColorGroups in arrays.
+		  // 
+		  // a = [&gF00 : 0F0, &g00F : FFFF0000] # redGreen, blueYellow
+		  // ```
+		  
+		  Var d As Dictionary = ParseXOOL(EXAMPLE_24)
+		  
+		  Var a() As ColorGroup = d.Value("a")
+		  
+		  Var tmpValues() As Color = a(0).Values
+		  Assert.AreEqual(tmpValues(0), Color.Red, "item 0")
+		  Assert.AreEqual(tmpValues(1), Color.Green, "item 0")
+		  
+		  tmpValues = a(1).Values
+		  Assert.AreEqual(tmpValues(0), Color.Blue, "item 1")
+		  Assert.AreEqual(tmpValues(1), Color.Yellow, "item 1")
+		  
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
 		Sub Example2Test()
 		  // Single comment.
 		  
@@ -381,6 +478,12 @@ Inherits TestGroup
 
 
 	#tag Constant, Name = EXAMPLE_12, Type = String, Dynamic = False, Default = \"# Color testing.\n\nc1 \x3D &c123\nc2 \x3D &cABCDEF\nc3 \x3D &cABCDEF12", Scope = Private
+	#tag EndConstant
+
+	#tag Constant, Name = EXAMPLE_23, Type = String, Dynamic = False, Default = \"# ColorGroup testing.\n\nred3Blue3 \x3D &gF00 : 00F\nred3Blue6 \x3D &gF00 : 0000FF\nred3Blue8 \x3D &gF00 : 0000FF00\n\nred6Blue3 \x3D &gFF0000 : 00F\nred6Blue6 \x3D &gFF0000 : 0000FF\nred6Blue8 \x3D &gFF0000 : 0000FF00\n\nred8Blue3 \x3D &gFF000000 : 00F\nred8Blue6 \x3D &gFF000000 : 0000FF\nred8Blue8 \x3D &gFF000000 : 0000FF00", Scope = Private
+	#tag EndConstant
+
+	#tag Constant, Name = EXAMPLE_24, Type = String, Dynamic = False, Default = \"# ColorGroups in arrays.\n\na \x3D [&gF00 : 0F0\x2C &g00F : FFFF0000] # redGreen\x2C blueYellow", Scope = Private
 	#tag EndConstant
 
 

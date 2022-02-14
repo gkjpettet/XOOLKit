@@ -124,9 +124,11 @@ These are the atomic building blocks of a XOOL document. Keys are on the left ha
 - Boolean
 - Nil
 - Color
+- ColorGroup
 - DateTime
 - Array
 - Inline dictionary
+- Absolute path to another declared key
 
 Unspecified values are invalid:
 
@@ -244,7 +246,7 @@ orange.color = "orange"
 
 Keys are **case insensitive**.
 
-### String
+#### String
 
 There are two types of string values in XOOL: **standard** and **raw**. All string must contain only valid UTF-8 characters.
 
@@ -303,7 +305,7 @@ str3 = """\
        """
 ```
 
-### Number
+#### Number
 
 Numbers may be either integers or double values. They may be prefixed with a `-` sign:
 
@@ -360,7 +362,7 @@ invalid_double_2 = 7.
 invalid_double_3 = 3.e+20
 ```
 
-### Boolean
+#### Boolean
 
 Booleans are how you would expect. They are case insensitive.
 
@@ -369,7 +371,7 @@ bool1 = True
 bool2 = false
 ```
 
-### Nil
+#### Nil
 
 Nil is self-explanatory:
 
@@ -378,7 +380,7 @@ key1 = Nil
 key2 = nil
 ```
 
-### Color
+#### Color
 
 Color literals are prefixed with `&c` and then follow the CSS convention with three possibilities:
 
@@ -390,7 +392,16 @@ Color literals are prefixed with `&c` and then follow the CSS convention with th
 
 Where RGBA are hexadecimal digits.
 
-### DateTime
+
+#### ColorGroup
+
+XOOL provides limited support for Xojo's `ColorGroup` class. `ColorGroup` literals are prefixed with `&g`. You must supply two colours (the first is for light mode, the second for dark mode) separated by a colon (`:`). The format is the same as for `Color` literals above. You can mix and match 3, 6 or 8 digit colours and whitespace is permitted either side of the colon:
+
+```xool
+group = &gff0000 : 0f0 # Red and green. Note the dark colour (green) has no prefix.
+```
+
+#### DateTime
 
 You can specify a date and time in SQL format:
 
@@ -410,7 +421,7 @@ If you aren't interested in the date, only the time you can use this format:
 bedtime = 23:30:00 # HH:MM:SS
 ```
 
-### Array
+#### Array
 
 Arrays are square brackets with values inside. Whitespace is ignored. Comments are permitted within arrays. Elements are separated by commas. Arrays can contain values of the same data types as allowed in key/value pairs. Values of different types may be mixed. Arrays **cannot** be nested.
 
@@ -427,11 +438,44 @@ contributors = [
 ]
 ```
 
-### Inline dictionary
+#### Inline dictionary
 
 Inline dictionaries provide a more compact method for expressing a dictionary. Inline dictionaries must be fully defined within curly braces `{` and `}`. Within the braces, zero or more comma-separated key/value pairs may appear. Key/value pairs take the same form as key/value pairs in standard dictionaries. All value types are allowed, including inline dictionaries.
 
 Inline dictionaries are intended to appear on a single line. A terminating comma (also called trailing comma) is not permitted after the last key/value pair in an inline dictionary. No newlines are allowed between the curly braces unless they are valid within a value. Even so, it is strongly discouraged to break an inline dictionary onto multiples lines. If you find yourself needing to do this, you should use a standard dictionary with an absolute path.
+
+
+#### Absolute path to another declared key
+
+Rather than specify a literal value for a key you can "point" to the value already stored in another key. This is achieved by providing, as the value, the **absolute path** to the desired key:
+
+```xool
+[colors]
+red = &cf00
+
+[theme]
+background = colors.red # Note the absolute path to the `red` key in the `colors` dictionary.
+```
+
+Since XOOL documents are parsed from top to bottom, if you reference a key as a value then that key must already exist, otherwise it's an error:
+
+```xool
+[theme]
+background = colors.red # Fails as `colors.red` has not been declared at this point.
+
+[colors]
+red = &cf00
+```
+
+There is one small edge case to using absolute paths as key values and this is that it's not possible to reference, as a value, a path whose first component is either `nil`, `true` or `false`. The reason for this is that would be possible, for example, to define a dictionary called `true` (which is valid although discouraged) early in the document that would prevent the boolean value `true` being assigned to subsequent keys.
+
+```xool
+[nil]
+red = &cf00
+
+[users]
+bob = nil # This will be Nil and not the colour red!
+```
 
 ### Dictionary paths
 

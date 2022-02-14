@@ -34,18 +34,22 @@ Protected Module XOOLKit
 		  Case Variant.TypeObject
 		    #Pragma BreakOnExceptions False
 		    Try
-		      Return DictionaryArrayToXOOL(a)
+		      Return ColorGroupArrayToXOOL(a)
 		    Catch e1 As TypeMismatchException
 		      Try
-		        Return SerializableArrayToXOOL(a)
+		        Return DictionaryArrayToXOOL(a)
 		      Catch e2 As TypeMismatchException
 		        Try
-		          Return ObjectArrayToXOOL(a)
+		          Return SerializableArrayToXOOL(a)
 		        Catch e3 As TypeMismatchException
 		          Try
-		            Return ArrayOfArraysToXOOL(a)
+		            Return ObjectArrayToXOOL(a)
 		          Catch e4 As TypeMismatchException
-		            Raise New XOOLKit.XKException("Unable to serialize array.")
+		            Try
+		              Return ArrayOfArraysToXOOL(a)
+		            Catch e5 As TypeMismatchException
+		              Raise New XOOLKit.XKException("Unable to serialize array.")
+		            End Try
 		          End Try
 		        End Try
 		      End Try
@@ -114,6 +118,60 @@ Protected Module XOOLKit
 		  s.Add("]")
 		  
 		  Return String.FromArray(s, "")
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h21
+		Private Function ColorGroupArrayToXOOL(colorGroups() As ColorGroup) As String
+		  // Returns a XOOL representation of a ColorGroup array.
+		  
+		  Var s() As String
+		  
+		  s.Add("[")
+		  
+		  For Each cg As ColorGroup In colorGroups
+		    s.Add(GenerateXOOL(cg))
+		    s.Add(", ")
+		  Next cg
+		  
+		  Call s.Pop
+		  
+		  s.Add("]")
+		  
+		  Return String.FromArray(s, "")
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h21, Description = 52657475726E73206120584F4F4C20726570726573656E746174696F6E206F6620606367602E204D617920726169736520612060584B457863657074696F6E602E
+		Private Function ColorGroupToXOOL(cg As ColorGroup) As String
+		  /// Returns a XOOL representation of `cg`. May raise a `XKException`.
+		  ///
+		  /// XOOL color format: RRGGBBAA
+		  /// Xojo color format: AARRGGBB
+		  /// XOOL color group format: &gLIGHT_COLOR : DARK_COLOR
+		  ///
+		  /// XOOL assumes that the the first value is the light colour and (if present) that the second value
+		  /// is the dark colour. If only one colour is present then we use it for both light and dark.
+		  
+		  If cg = Nil Then
+		    Raise New XKException("Cannot convert a Nil ColorGroup to a XOOL representation.")
+		  End If
+		  
+		  Var values() As Color = cg.Values
+		  
+		  If values.Count = 0 Then
+		    Raise New XKException("The ColorGroup has no colors within.")
+		  End If
+		  
+		  Var light As Color = values(0)
+		  Var dark As Color = If(values.Count > 1, values(1), values(0))
+		  
+		  Var lightString As String = light.ToString
+		  Var darkString As String = dark.ToString
+		  
+		  Return "&g" + lightString.Right(6) + lightString.Middle(2, 2) + " : " + _
+		  darkString.Right(6) + darkString.Middle(2, 2)
+		  
 		End Function
 	#tag EndMethod
 
@@ -245,6 +303,9 @@ Protected Module XOOLKit
 		    
 		  ElseIf value.IsArray Then
 		    Return ArrayToXOOL(value)
+		    
+		  ElseIf value IsA ColorGroup Then
+		    Return ColorGroupToXOOL(value)
 		    
 		  Else
 		    Select Case value.Type
@@ -489,6 +550,9 @@ Protected Module XOOLKit
 		  /// Returns a string representation of `type`.
 		  
 		  Select Case type
+		  Case XKTokenTypes.ColorGroupLiteral
+		    Return "ColorGroup Literal"
+		    
 		  Case XKTokenTypes.ColorLiteral
 		    Return "Color Literal"
 		    
@@ -562,7 +626,7 @@ Protected Module XOOLKit
 	#tag Constant, Name = VERSION_MAJOR, Type = Double, Dynamic = False, Default = \"1", Scope = Protected
 	#tag EndConstant
 
-	#tag Constant, Name = VERSION_MINOR, Type = Double, Dynamic = False, Default = \"1", Scope = Protected
+	#tag Constant, Name = VERSION_MINOR, Type = Double, Dynamic = False, Default = \"2", Scope = Protected
 	#tag EndConstant
 
 	#tag Constant, Name = VERSION_PATCH, Type = Double, Dynamic = False, Default = \"1", Scope = Protected
@@ -572,6 +636,7 @@ Protected Module XOOLKit
 	#tag Enum, Name = XKTokenTypes, Type = Integer, Flags = &h0
 		BooleanLiteral
 		  ColorLiteral
+		  ColorGroupLiteral
 		  Comma
 		  Comment
 		  DateTime

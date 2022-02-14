@@ -52,6 +52,156 @@ Protected Class XKTokeniser
 	#tag EndMethod
 
 	#tag Method, Flags = &h21, Description = 417474656D70747320746F20616464206120636F6C6F7220746F6B656E2E2052616973657320616E2060584B457863657074696F6E6020696620756E7375636365737366756C2E
+		Private Function ColorGroupToken() As XOOLKit.XKToken
+		  /// Attempts to add a color group token. Raises an `XKException` if unsuccessful.
+		  ///
+		  /// Assumes we have just consumed a `&`:
+		  /// ```
+		  /// c = &gFFF:AA22FF
+		  ///      ^
+		  ///
+		  /// c = &cgFFF
+		  ///      ^
+		  /// ```
+		  ///
+		  /// Color group literals follow the CSS format:
+		  /// ```
+		  /// RGB      # red, green, blue
+		  /// RRGGBB   # red, red, green, green, blue, blue
+		  /// RRGGBBAA # red, red, green, green, blue, blue, alpha, alpha
+		  /// ```
+		  /// Where `R`, `G`, `B` and `A` are hexadecimal digits.
+		  /// Color groups are two colours separated by a colon.
+		  /// The second colour is **not** prefixed by `&g`.
+		  
+		  If Not Match("g") Then SyntaxError("Expected `&g` at start of a ColorGroup literal.")
+		  
+		  Var light(), dark() As String
+		  
+		  // ===========================
+		  // LIGHT COLOUR
+		  // ===========================
+		  // Need to see at least 3 hex digits.
+		  If Not Consume.IsHexDigit Or Not Consume.IsHexDigit Or Not Consume.IsHexDigit Then
+		    SyntaxError("Expected a hexadecimal digit.")
+		  End If
+		  light.Add(mCharacters(mCurrent - 3))
+		  light.Add(mCharacters(mCurrent - 2))
+		  light.Add(mCharacters(mCurrent - 1))
+		  
+		  // 3 digit Color literal?
+		  Select Case Peek
+		  Case " ", &u09
+		    // Consume whitespace.
+		    While Match(" ", &u09)
+		    Wend
+		    If Match(":") Then
+		      Goto DarkColor
+		    Else
+		      SyntaxError("Expected a `:` after the light ColorGroup colour.")
+		    End If
+		  Case ":"
+		    Goto DarkColor
+		  Case &u0A, ""
+		    SyntaxError("Expected a `:` after the light ColorGroup colour.")
+		  End Select
+		  
+		  // Need to see at least 3 more hex digits.
+		  If Not Consume.IsHexDigit Or Not Consume.IsHexDigit Or Not Consume.IsHexDigit Then
+		    SyntaxError("Expected a hexadecimal digit.")
+		  End If
+		  light.Add(mCharacters(mCurrent - 3))
+		  light.Add(mCharacters(mCurrent - 2))
+		  light.Add(mCharacters(mCurrent - 1))
+		  
+		  // 6 digit Color literal?
+		  Select Case Peek
+		  Case " ", &u09
+		    // Consume whitespace.
+		    While Match(" ", &u09)
+		    Wend
+		    If Match(":") Then
+		      Goto DarkColor
+		    Else
+		      SyntaxError("Expected a `:` after the light ColorGroup colour.")
+		    End If
+		  Case ":"
+		    Goto DarkColor
+		  Case &u0A, ""
+		    SyntaxError("Expected a `:` after the light ColorGroup colour.")
+		  End Select
+		  
+		  // Need to see at least 2 more hex digits.
+		  If Not Consume.IsHexDigit Or Not Consume.IsHexDigit Then
+		    SyntaxError("Expected a hexadecimal digit.")
+		  End If
+		  light.Add(mCharacters(mCurrent - 2))
+		  light.Add(mCharacters(mCurrent - 1))
+		  
+		  // Consume whitespace.
+		  While Match(" ", &u09)
+		  Wend
+		  
+		  If Not Match(":") Then
+		    SyntaxError("Expected a `:` after a ColorGroup's light colour.")
+		  End If
+		  
+		  // ===========================
+		  // DARK COLOUR
+		  // ===========================
+		  DarkColor:
+		  // Consume whitespace.
+		  While Match(" ", &u09)
+		  Wend
+		  
+		  // Need to see at least 3 hex digits.
+		  If Not Consume.IsHexDigit Or Not Consume.IsHexDigit Or Not Consume.IsHexDigit Then
+		    SyntaxError("Expected a hexadecimal digit.")
+		  End If
+		  dark.Add(mCharacters(mCurrent - 3))
+		  dark.Add(mCharacters(mCurrent - 2))
+		  dark.Add(mCharacters(mCurrent - 1))
+		  
+		  // 3 digit Color literal?
+		  Select Case Peek
+		  Case " ", &u09, &u0A, "", ",", "}", "]"
+		    Return New XKColorGroupToken(mTokenStart, mLineNumber, _
+		    String.FromArray(light, ""), String.FromArray(dark, ""))
+		  End Select
+		  
+		  // Need to see at least 3 more hex digits.
+		  If Not Consume.IsHexDigit Or Not Consume.IsHexDigit Or Not Consume.IsHexDigit Then
+		    SyntaxError("Expected a hexadecimal digit.")
+		  End If
+		  dark.Add(mCharacters(mCurrent - 3))
+		  dark.Add(mCharacters(mCurrent - 2))
+		  dark.Add(mCharacters(mCurrent - 1))
+		  
+		  // 6 digit Color literal?
+		  Select Case Peek
+		  Case " ", &u09, &u0A, "", ",", "}", "]"
+		    Return New XKColorGroupToken(mTokenStart, mLineNumber, _
+		    String.FromArray(light, ""), String.FromArray(dark, ""))
+		  End Select
+		  
+		  // 8 digit Color literal?
+		  If Peek.IsHexDigit And Peek(2).IsHexDigit Then
+		    dark.Add(Consume)
+		    dark.Add(Consume)
+		    Select Case Peek
+		    Case " ", &u09, &u0A, "", ",", "}", "]"
+		      Return New XKColorGroupToken(mTokenStart, mLineNumber, _
+		      String.FromArray(light, ""), String.FromArray(dark, ""))
+		    Else
+		      // Invalid character after these 8 hex digits.
+		      SyntaxError("Expected whitespace or EOF after dark colour ColorGroup literal.")
+		    End Select
+		  End If
+		  
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h21, Description = 417474656D70747320746F20616464206120636F6C6F7220746F6B656E2E2052616973657320616E2060584B457863657074696F6E6020696620756E7375636365737366756C2E
 		Private Function ColorToken() As XOOLKit.XKToken
 		  /// Attempts to add a color token. Raises an `XKException` if unsuccessful.
 		  ///
@@ -67,9 +217,9 @@ Protected Class XKTokeniser
 		  /// &cRRGGBB   # red, red, green, green, blue, blue
 		  /// &cRRGGBBAA # red, red, green, green, blue, blue, alpha, alpha
 		  /// ```
-		  // Where `R`, `G`, `B` and `A` are hexadecimal digits.
+		  /// Where `R`, `G`, `B` and `A` are hexadecimal digits.
 		  
-		  If Not Match("c") Then SyntaxError("Expected `c` at start of Color literal.")
+		  If Not Match("c") Then SyntaxError("Expected `&c` at start of Color literal.")
 		  
 		  // Need to see at least 3 hex digits.
 		  If Not Consume.IsHexDigit Or Not Consume.IsHexDigit Or Not Consume.IsHexDigit Then
@@ -101,7 +251,7 @@ Protected Class XKTokeniser
 		      Return New XKColorToken(mTokenStart, mLineNumber, ComputeLexeme(mTokenStart + 2, mCurrent - 1))
 		    Else
 		      // Invalid character after these 8 hex digits.
-		      SyntaxError("Expected whitespace or EOF after Color literal,")
+		      SyntaxError("Expected whitespace or EOF after Color literal.")
 		    End Select
 		  End If
 		  
@@ -494,6 +644,8 @@ Protected Class XKTokeniser
 		      Return ColorToken
 		    ElseIf Peek = "h" Then
 		      Return HexToken
+		    ElseIf Peek = "g" Then
+		      Return ColorGroupToken
 		    ElseIf Peek = "o" Then
 		      Return OctalToken
 		    ElseIf Peek = "b" Then

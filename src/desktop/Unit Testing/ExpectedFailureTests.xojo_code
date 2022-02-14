@@ -88,6 +88,13 @@ Inherits TestGroup
 		End Sub
 	#tag EndMethod
 
+	#tag Method, Flags = &h0
+		Sub Example8Test()
+		  ExpectFail(CurrentMethodName, "Missing dark colour.")
+		  
+		End Sub
+	#tag EndMethod
+
 	#tag Method, Flags = &h21, Description = 52756E7320612074657374207468617420697320657870656374656420746F206661696C2E
 		Private Sub ExpectFail(methodName As String, message As String)
 		  /// Runs a test that is expected to fail.

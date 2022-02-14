@@ -1,0 +1,3 @@
+redBlue = &gFF000000 : 0000FF00
+greenYellow = &g00FF0000 : FFFF0000
+magentaOnly = &gFF00FF00 : FF00FF00

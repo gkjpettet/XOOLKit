@@ -22,6 +22,20 @@ Inherits TestGroup
 
 
 	#tag Method, Flags = &h0
+		Sub Example10Test()
+		  // Color Groups.
+		  
+		  Var d As New Dictionary( _
+		  "redBlue" : New ColorGroup(Color.Red, Color.Blue), _
+		  "greenYellow" : New ColorGroup(Color.Green, Color.Yellow), _
+		  "magentaOnly" : New ColorGroup(Color.Magenta))
+		  
+		  Run(CurrentMethodName, d)
+		  
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
 		Sub Example1Test()
 		  // Strings.
 		  

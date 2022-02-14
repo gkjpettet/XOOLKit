@@ -31,7 +31,7 @@ Protected Class XKParser
 		  /// Arrays cannot be nested.
 		  ///
 		  /// array   → LSQUARE (literal (COMMA literal)*)? RSQUARE
-		  /// literal → BOOLEAN | COLOR | DATETIME | NIL | NUMBER | STRING
+		  /// literal → BOOLEAN | COLOR | COLORGROUP | DATETIME | NIL | NUMBER | STRING
 		  
 		  // Empty array?
 		  If Match(XKTokenTypes.RSquare) Then
@@ -48,6 +48,9 @@ Protected Class XKParser
 		    
 		  ElseIf Match(XKTokenTypes.ColorLiteral) Then
 		    values.Add(Variant.TypeColor : XKColorToken(mPreviousToken).MyColor)
+		    
+		  ElseIf Match(XKTokenTypes.ColorGroupLiteral) Then
+		    values.Add(Variant.TypeObject : XKColorGroupToken(mPreviousToken).Value)
 		    
 		  ElseIf Match(XKTokenTypes.DateTime) Then
 		    values.Add(Variant.TypeDateTime : XKDateTimeToken(mPreviousToken).Value)
@@ -81,6 +84,9 @@ Protected Class XKParser
 		      
 		    ElseIf Match(XKTokenTypes.ColorLiteral) Then
 		      values.Add(Variant.TypeColor : XKColorToken(mPreviousToken).MyColor)
+		      
+		    ElseIf Match(XKTokenTypes.ColorGroupLiteral) Then
+		      values.Add(Variant.TypeObject : XKColorGroupToken(mPreviousToken).Value)
 		      
 		    ElseIf Match(XKTokenTypes.DateTime) Then
 		      values.Add(Variant.TypeDateTime : XKDateTimeToken(mPreviousToken).Value)
@@ -174,11 +180,30 @@ Protected Class XKParser
 		    Return i
 		    
 		  Case Variant.TypeObject
-		    Var v() As Variant
+		    // Could this be a ColorGroup array?
+		    Var isColorGroupArray As Boolean = False
 		    For Each p As Pair In values
-		      v.Add(p.Right)
+		      If p.Right IsA ColorGroup Then
+		        isColorGroupArray = True
+		      Else
+		        isColorGroupArray = False
+		        Exit
+		      End If
 		    Next p
-		    Return v
+		    
+		    If isColorGroupArray Then
+		      Var cg() As ColorGroup
+		      For Each p As Pair In values
+		        cg.Add(p.Right)
+		      Next p
+		      Return cg
+		    Else
+		      Var v() As Variant
+		      For Each p As Pair In values
+		        v.Add(p.Right)
+		      Next p
+		      Return v
+		    End If
 		    
 		  Case Variant.TypeString
 		    Var s() As String
@@ -349,7 +374,7 @@ Protected Class XKParser
 		  ///
 		  /// inlineDict         → LCURLY inlineDictKeyValue* RCURLY
 		  /// inlineDictKeyValue → IDENTIFIER EQUAL literal
-		  /// literal            → BOOLEAN | COLOR | DATETIME | NIL | NUMBER | STRING
+		  /// literal            → BOOLEAN | COLOR | COLORGROUP | DATETIME | NIL | NUMBER | STRING
 		  
 		  Var d As New Dictionary
 		  
@@ -390,7 +415,7 @@ Protected Class XKParser
 		  ///
 		  /// inlineDictKeyValue → keyName EQUAL inlineDictValue
 		  /// keyName            → IDENTIFIER | NIL | BOOLEAN
-		  /// inlineDictValue    → BOOLEAN | COLOR | DATETIME | NIL | NUMBER | STRING
+		  /// inlineDictValue    → BOOLEAN | COLOR | COLORGROUP | DATETIME | NIL | NUMBER | STRING
 		  
 		  Consume("Expected a key.", XKTokenTypes.Identifier, XKTokenTypes.NilLiteral, XKTokenTypes.BooleanLiteral)
 		  Var key As String = mPreviousToken.Lexeme
@@ -403,6 +428,9 @@ Protected Class XKParser
 		    
 		  ElseIf Match(XKTokenTypes.ColorLiteral) Then
 		    Return key : XKColorToken(mPreviousToken).MyColor
+		    
+		  ElseIf Match(XKTokenTypes.ColorGroupLiteral) Then
+		    Return key : XKColorGroupToken(mPreviousToken).Value
 		    
 		  ElseIf Match(XKTokenTypes.DateTime) Then
 		    Return key : XKDateTimeToken(mPreviousToken).Value
@@ -417,7 +445,7 @@ Protected Class XKParser
 		    Return key : mPreviousToken.Lexeme
 		    
 		  Else
-		    Error("Expected a boolean, color, datetime, number or string value or Nil.")
+		    Error("Expected a boolean, color, colorgroup, datetime, number or string value or Nil.")
 		  End If
 		  
 		End Function
@@ -433,6 +461,7 @@ Protected Class XKParser
 		  /// keyValue   → key EQUAL value terminator
 		  /// key        → IDENTIFIER (DOT IDENTIFIER)*
 		  /// value      → key | literal | array | inlineDict
+		  /// literal    → STRING | NUMBER | BOOLEAN | COLOR | COLORGROUP | DATETIME | NIL
 		  /// terminator → EOL | EOF
 		  ///
 		  /// E.g:
@@ -617,7 +646,7 @@ Protected Class XKParser
 		  ///
 		  /// value   → key | literal | array | inlineDict
 		  /// key     → IDENTIFIER (DOT IDENTIFIER)*
-		  /// literal → STRING | NUMBER | BOOLEAN | COLOR | DATETIME | NIL
+		  /// literal → STRING | NUMBER | BOOLEAN | COLOR | COLORGROUP | DATETIME | NIL
 		  
 		  If Match(XKTokenTypes.Identifier) Then
 		    Var components() As String = Array(mPreviousToken.Lexeme)
@@ -663,6 +692,9 @@ Protected Class XKParser
 		  ElseIf Match(XKTokenTypes.ColorLiteral) Then
 		    Return XKColorToken(mPreviousToken).MyColor
 		    
+		  ElseIf Match(XKTokenTypes.ColorGroupLiteral) Then
+		    Return XKColorGroupToken(mPreviousToken).Value
+		    
 		  ElseIf Match(XKTokenTypes.DateTime) Then
 		    Return XKDateTimeToken(mPreviousToken).Value
 		    
@@ -676,7 +708,7 @@ Protected Class XKParser
 		    Return InlineDict
 		    
 		  Else
-		    Error("Expected a string, number, boolean, color, datetime, Nil, array or inline dictionary.")
+		    Error("Expected a string, number, boolean, color, colorgroup, datetime, Nil, array or inline dictionary.")
 		    
 		  End If
 		  

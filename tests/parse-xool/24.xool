@@ -1,0 +1,3 @@
+# ColorGroups in arrays.
+
+a = [&gF00 : 0F0, &g00F : FFFF0000] # redGreen, blueYellow

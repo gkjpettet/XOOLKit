@@ -1,0 +1,13 @@
+# ColorGroup testing.
+
+red3Blue3 = &gF00 : 00F
+red3Blue6 = &gF00 : 0000FF
+red3Blue8 = &gF00 : 0000FF00
+
+red6Blue3 = &gFF0000 : 00F
+red6Blue6 = &gFF0000 : 0000FF
+red6Blue8 = &gFF0000 : 0000FF00
+
+red8Blue3 = &gFF000000 : 00F
+red8Blue6 = &gFF000000 : 0000FF
+red8Blue8 = &gFF000000 : 0000FF00

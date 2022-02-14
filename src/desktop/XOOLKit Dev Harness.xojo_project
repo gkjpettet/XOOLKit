@@ -14,6 +14,7 @@ Module=StringKit;../../../StringKit/StringKit.xojo_xml_code;&h00000000760CFFFF;&
 Class=XKToken;XOOLKit/XKToken.xojo_code;&h000000005B3277FF;&h0000000007B2AFFF;false
 Class=XKTokeniserException;XOOLKit/XKTokeniserException.xojo_code;&h00000000520387FF;&h0000000007B2AFFF;false
 Class=XKColorToken;XOOLKit/XKColorToken.xojo_code;&h00000000198C4FFF;&h0000000007B2AFFF;false
+Class=XKColorGroupToken;XOOLKit/XKColorGroupToken.xojo_code;&h0000000070229FFF;&h0000000007B2AFFF;false
 Class=XKNumberToken;XOOLKit/XKNumberToken.xojo_code;&h000000000D72CFFF;&h0000000007B2AFFF;false
 Class=XKBooleanToken;XOOLKit/XKBooleanToken.xojo_code;&h00000000079BB7FF;&h0000000007B2AFFF;false
 Class=XKDateTimeToken;XOOLKit/XKDateTimeToken.xojo_code;&h0000000072A4A7FF;&h0000000007B2AFFF;false
